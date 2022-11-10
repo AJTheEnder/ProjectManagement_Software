@@ -30,10 +30,10 @@ class Model:
     # This function is called at the begining of the program in order to link all datas from DB to the program
     def Start(self):
         try:
-            self.connection = mysql.connector.connect(host='localhost',
-                                                      database='Electronics',
-                                                      user='pynative',
-                                                      password='pynative@#29')
+            self.connection = mysql.connector.connect(host='mysql-rdefaria.alwaysdata.net',
+                                                      database='rdefaria_projectmanagement',
+                                                      user='rdefaria',
+                                                      password='petitdeuf1')
             if self.connection.is_connected():
                 db_Info = self.connection.get_server_info()
                 print("Connected to MySQL Server version ", db_Info)

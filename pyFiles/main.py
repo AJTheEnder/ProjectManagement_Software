@@ -7,5 +7,5 @@ import Views.view as v
 model = m.Model()
 controller = c.Controller(model)
 view = v.View(controller)
-controller.AddView(view)
-controller.Start()
+controller.add_View(view)
+controller.start()
