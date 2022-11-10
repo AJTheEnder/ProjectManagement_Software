@@ -3,8 +3,9 @@ import mysql.connector
 from mysql.connector import Error
 
 class Project:
-    def __init__(self, name, time, date):
+    def __init__(self, name, time, date, tasks):
         self.id = id
         self.name = name
         self.time = time
         self.date = date
+        self.tasks = tasks
