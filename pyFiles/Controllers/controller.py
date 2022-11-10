@@ -41,7 +41,10 @@ class Controller :
             self.view.show_Subtasks_Page()
         elif(view_Type == 7) :
             self.view.current_View = 7
-            self.show_Account_Page()
+            self.view.show_Create_Project_Page()
+        elif(view_Type == 8) :
+            self.view.current_View = 8
+            self.view.show_Account_Page()
             
     # Make the connection between the controller and the view
     def add_View(self, view) :
@@ -49,5 +52,14 @@ class Controller :
         
     def ask_For_Add_User(self, username, password) :
         self.model.add_User(username, password)
-        self.refresh()
+        self.refresh(1)
         
+    def ask_For_Add_Project_And_Tasks(self, project_Name, project_Time, tasks_List_From_Project) :
+        self.model.add_Project(project_Name, project_Time, tasks_List_From_Project)
+        self.refresh(1) 
+        
+    def ask_For_Get_All_Users(self) :
+        return self.model.userList 
+    
+    def ask_For_Get_All_Projects_And_Tasks(self) :
+        return self.model.projectList  

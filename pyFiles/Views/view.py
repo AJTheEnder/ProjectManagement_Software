@@ -46,26 +46,57 @@ class View :
 
     # This page shows a place to write a username and a password, if the connection has fail show an error message 
     # if not continue in program in function of the type of user (admin, project owner, employee)  
-    # You can also decide to create a user so you go to account create page.    
+    # You can also decide to create a user so you go to account create page. (Temporally the menu page)   
     def show_Connection_Page(self) :
-        print('\nCONNECTION PAGE\n')
-        confirmation = input('\nEnter YES to connect :\n')
-        while(confirmation != 'YES') :
-            confirmation = input('\nEnter YES to connect :\n')
-        self.controller.refresh(7)
+        valid_Choice = False
+        while(valid_Choice == False) :
+            print('\nMENU PAGE\n'
+                  '\n1 -- Add a user\n'
+                  '\n2 -- Add a project with tasks\n'
+                  '\n3 -- show all users\n'
+                  '\n4 -- show all project with their tasks\n'
+                  )
+            choice = input('\nCHOICE : \n')
+            if(choice == '1') :
+                self.controller.refresh(2)
+                valid_Choice = True
+            elif(choice == '2') :
+                self.controller.refresh(7)
+                valid_Choice = True
+            elif(choice == '3') :
+                self.controller.refresh(8)
+                valid_Choice = True
+            elif(choice == '4') :
+                self.controller.refresh(3)
+                valid_Choice = True
+            else :
+                print('\nINVALID CHOICE\n')
             
 
     # This page lets you create an account with your informations. If you are an admin you have to insert the 
     # ADMIN KEY, if you are a project owner you have to insert the PROJECT OWNER KEY.    
     def show_Account_Creation_Page(self) :
         print('\nACCOUNT CREATION PAGE\n')
-        username = input('\nEnter a USERNAME :\n')
-        self.controller.ask_For_Add_User(username)    
+        username = input('\nEnter a USERNAME : \n')
+        password = input('\nEnter a PASSWORD : \n')
+        self.controller.ask_For_Add_User(username, password)    
 
     # This page shows the projects you are owning in function of your user status. This page is inaccessible for 
     # regular employees.    
     def show_Projects_Page(self) :
         print('\nPROJECTS PAGE\n')
+        projects_List = self.controller.ask_For_Get_All_Projects_And_Tasks()
+        for i in range(len(projects_List)) :
+            print('\n\nProject NAME : ', projects_List[i].name)
+            print('\nThis project takes ', projects_List[i].time, ' in total')
+            print('\nTASKS of the project : \n')
+            for j in range(len(projects_List[i].tasks)) :
+                print('\nTask NAME : ', projects_List[i].tasks[j].name)
+                print('\nTask TIME : ', projects_List[i].tasks[j].time)
+                print('\nTask STATUS : ', projects_List[i].tasks[j].status)
+                print('\nTask STATE : ', projects_List[i].tasks[j].state, '\n')
+        end = input('\n\nPress ENTER to go back to MENU\n')
+        self.controller.refresh(1)
 
     # This page shows all the tasks of a project in a Gantt form. This page is inaccessible for regular employees.
     def show_Gantt_Project_Page(self) :
@@ -80,7 +111,28 @@ class View :
     def show_Subtasks_Page(self) :
         print('\nSUBTASKS PAGE\n')
         
-    # This page shows the informations of the current user. (Temporally the menu page)
+    # This page allow the user to create a project with tasks.
+    def show_Create_Project_Page(self) :
+        print('\nPROJECT CREATION PAGE\n')
+        project_Name = input('\nEnter a PROJECT NAME : \n')
+        project_Time = input('\nEnter the TOTAL TIME of the project : \n')
+        tasks_List_From_Project = []
+        choice = input('\nDo you want to create a task for this project ? YES/NO\n')
+        while(choice == 'YES') :
+            task_Name = input('\n   Enter the TASK NAME : \n')
+            task_Time = input('\n   Enter the TOTAL TIME of the task : \n')
+            task_Status = input('\n   Enter the TASK STATUS (BACKLOG / IN PROGRESS / READY / IN REVIEW / DONE) : \n')
+            task_State = input('\n   Enter the TASK STATE (OPEN / CLOSE) : \n')
+            tasks_List_From_Project.append([task_Name, task_Time, task_Status, task_State])
+            choice = input('\nDo you want to create a task for this project ? YES/NO\n')
+        self.controller.ask_For_Add_Project_And_Tasks(project_Name, project_Time, tasks_List_From_Project)
+               
+    # This page shows the informations of the current user. 
     def show_Account_Page(self) :
-        print('\nMENU PAGE\n')
-        choice = input('\nCHOICE :\n')
+        print('\nACCOUNT PAGE\n')
+        users_List = self.controller.ask_For_Get_All_Users()
+        for i in range(len(users_List)) :
+            print('\n\nUser NAME : ', users_List[i].name)
+            print('\nUser PASSWORD ', users_List[i].password)
+        end = input('\n\nPress ENTER to go back to MENU\n')
+        self.controller.refresh(1)

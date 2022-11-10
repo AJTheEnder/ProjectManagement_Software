@@ -1,3 +1,5 @@
+from __future__ import print_function
+from datetime import date, datetime, timedelta
 # Import Classes for linking the DB to the program
 from Class.project import Project
 from Class.task import Task
@@ -57,47 +59,54 @@ class Model:
     ########################## ADD USER ##########################
     def add_User(self, name, password):
 
-        add_User = ("INSERT INTO Employe " #penser a bien relier les noms de tab
-                    "(name) "
-                    "VALUES (%s)")
+        #user_Data = tuple(name)
+        #
+        #add_User = '''INSERT INTO Employe 
+        #            (nom) 
+        #            VALUES (%s)'''%user_Data
 
-        new_user = User(self, name)
+        new_user = User(name, password)
         self.userList.append(new_user)
 
-        self.cursor.execute(add_User, name)
-        # Make sure data is committed to the database
-        self.connection.commit()
+        #self.cursor.execute(add_User, user_Data)
+        ## Make sure data is committed to the database
+        #self.connection.commit()
+        
+    ######################### ADD PROJECT #########################
+    def add_Project(self, name, time, tasks):
+
+        tomorrow = datetime.now().date() + timedelta(days=1)
+        
+        #add_Project = ("INSERT INTO Projet " #penser a bien relier les noms de tab
+        #               "(DateCreation, time, nom, Temps) "
+        #               "VALUES (%s, %s, %s)")
+        #
+        #project_Data = (name, time, tomorrow)
+
+        for i in range(len(tasks)) :
+            self.taskListFromProject.append(Task(tasks[i][0], tasks[i][1], tasks[i][2], tasks[i][3], 0))
+        
+        new_project = Project(name, time, tomorrow, self.taskListFromProject)
+        self.projectList.append(new_project)
+
+        #self.cursor.execute(add_Project, name, time)
+        ## Make sure data is committed to the database
+        #self.connection.commit()
 
     ########################## ADD TASK ##########################
     def add_Task(self, name, time, status, state):
 
-        add_Task = ("INSERT INTO Tache " #penser a bien relier les noms de tab
-                    "(name, time, status, state) "
-                    "VALUES (%s, %s, %s, %s)")
+        #add_Task = ("INSERT INTO Tache " #penser a bien relier les noms de tab
+        #            "(name, time, status, state) "
+        #            "VALUES (%s, %s, %s, %s)")
 
 
-        new_task = Task(self, name, time, status, state)
+        new_task = Task(name, time, status, state, 0)
         self.taskListFromProject.append(new_task)
 
-        self.cursor.execute(add_Task, name, time, status, state)
-        # Make sure data is committed to the database
-        self.connection.commit()
-
-
-    ######################### ADD PROJECT #########################
-    def add_Project(self, name, time, date):
-
-        add_Projet = ("INSERT INTO Projet " #penser a bien relier les noms de tab
-                    "(name, time, status, state) "
-                    "VALUES (%s, %s, %s, %s)")
-
-
-        new_project = Project(self, name, time, date)
-        self.projectList.append(new_project)
-
-        self.cursor.execute(add_Task, name, time, status, state)
-        # Make sure data is committed to the database
-        self.connection.commit()
+        #self.cursor.execute(add_Task, name, time, status, state)
+        ## Make sure data is committed to the database
+        #self.connection.commit() 
 
 
     
