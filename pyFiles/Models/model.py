@@ -59,16 +59,16 @@ class Model:
     ########################## ADD USER ##########################
     def add_User(self, name, password):
 
-        user_Data = tuple(name)
+        user_Data = (name)
         
         add_User = '''INSERT INTO Employe 
                    (nom) 
-                   VALUES (%s)'''.format(user_Data)
+                   VALUES ('%s')'''%user_Data
 
         new_user = User(name, password)
         self.userList.append(new_user)
 
-        self.cursor.execute(add_User, user_Data)
+        self.cursor.execute(add_User)
         # Make sure data is committed to the database
         self.connection.commit()
         
@@ -77,11 +77,11 @@ class Model:
 
         tomorrow = datetime.now().date() + timedelta(days=1)
 
-        project_Data = (name, time, tomorrow)
+        project_Data = (tomorrow, name, time)
         
-        add_Project = '''INSERT INTO Projet " 
-                      "(DateCreation, time, nom, Temps) "
-                      "VALUES (%s, %s, %s)''' .format(project_Data)
+        add_Project = '''INSERT INTO Projet  
+                      (DateCreation, nom, Temps) 
+                      VALUES ('%s', '%s', '%s')'''%project_Data
 
         for i in range(len(tasks)) :
             self.taskListFromProject.append(Task(tasks[i][0], tasks[i][1], tasks[i][2], tasks[i][3], 0))
@@ -89,26 +89,29 @@ class Model:
         new_project = Project(name, time, tomorrow, self.taskListFromProject)
         self.projectList.append(new_project)
 
-        #self.cursor.execute(add_Project, name, time)
-        ## Make sure data is committed to the database
-        #self.connection.commit()
+        self.cursor.execute(add_Project, name, time)
+        # Make sure data is committed to the database
+        self.connection.commit()
 
     ########################## ADD TASK ##########################
     def add_Task(self, name, time, status, state):
 
         task_Data = (name, time, status, state)
 
-        add_Task = ("INSERT INTO Tache " #penser a bien relier les noms de tab
-                   "(name, time, status, state) "
-                   "VALUES (%s, %s, %s, %s)") .format(task_Data)
+        add_Task = '''INSERT INTO Tache  
+                   (name, time, status, state) 
+                   VALUES ('%s', '%s', '%s', '%s')'''%task_Data
 
 
         new_task = Task(name, time, status, state, 0)
         self.taskListFromProject.append(new_task)
 
-        #self.cursor.execute(add_Task, name, time, status, state)
-        ## Make sure data is committed to the database
-        #self.connection.commit() 
+        self.cursor.execute(add_Task, name, time, status, state)
+        # Make sure data is committed to the database
+        self.connection.commit() 
+        
+    #def get_Users(self) :
+
 
 
     
