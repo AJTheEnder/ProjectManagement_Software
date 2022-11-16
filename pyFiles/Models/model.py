@@ -59,11 +59,11 @@ class Model:
     ########################## ADD USER ##########################
     def add_User(self, name, password):
 
-        #user_Data = tuple(name)
-        #
-        #add_User = '''INSERT INTO Employe 
-        #            (nom) 
-        #            VALUES (%s)'''%user_Data
+        user_Data = tuple(name)
+        
+        add_User = '''INSERT INTO Employe 
+                   (nom) 
+                   VALUES (%s)'''.format(user_Data)
 
         new_user = User(name, password)
         self.userList.append(new_user)
@@ -76,12 +76,12 @@ class Model:
     def add_Project(self, name, time, tasks):
 
         tomorrow = datetime.now().date() + timedelta(days=1)
+
+        project_Data = (name, time, tomorrow)
         
-        #add_Project = ("INSERT INTO Projet " #penser a bien relier les noms de tab
-        #               "(DateCreation, time, nom, Temps) "
-        #               "VALUES (%s, %s, %s)")
-        #
-        #project_Data = (name, time, tomorrow)
+        add_Project = '''INSERT INTO Projet " 
+                      "(DateCreation, time, nom, Temps) "
+                      "VALUES (%s, %s, %s)''' .format(project_Data)
 
         for i in range(len(tasks)) :
             self.taskListFromProject.append(Task(tasks[i][0], tasks[i][1], tasks[i][2], tasks[i][3], 0))
@@ -96,9 +96,11 @@ class Model:
     ########################## ADD TASK ##########################
     def add_Task(self, name, time, status, state):
 
-        #add_Task = ("INSERT INTO Tache " #penser a bien relier les noms de tab
-        #            "(name, time, status, state) "
-        #            "VALUES (%s, %s, %s, %s)")
+        task_Data = (name, time, status, state)
+
+        add_Task = ("INSERT INTO Tache " #penser a bien relier les noms de tab
+                   "(name, time, status, state) "
+                   "VALUES (%s, %s, %s, %s)") .format(task_Data)
 
 
         new_task = Task(name, time, status, state, 0)
