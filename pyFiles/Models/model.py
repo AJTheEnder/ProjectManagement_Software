@@ -68,9 +68,9 @@ class Model:
         new_user = User(name, password)
         self.userList.append(new_user)
 
-        #self.cursor.execute(add_User, user_Data)
-        ## Make sure data is committed to the database
-        #self.connection.commit()
+        self.cursor.execute(add_User, user_Data)
+        # Make sure data is committed to the database
+        self.connection.commit()
         
     ######################### ADD PROJECT #########################
     def add_Project(self, name, time, tasks):

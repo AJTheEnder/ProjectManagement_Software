@@ -10,7 +10,8 @@ class Controller :
         errorStatus = self.model.Start()
         if(errorStatus) :
             # If the model didn't connect to the DB show the error page.
-            self.view.show_Connection_Error_Page()
+            # self.view.show_Connection_Error_Page()
+            self.view.show_Connection_Page()
         else :
             # If the model did connect to the DB show the connection page.
             self.view.show_Connection_Page()
