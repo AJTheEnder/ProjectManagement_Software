@@ -68,7 +68,9 @@ class Model:
         new_user = User(name, password)
         self.userList.append(new_user)
 
+        self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
         self.cursor.execute(add_User)
+        self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
         # Make sure data is committed to the database
         self.connection.commit()
         
@@ -89,9 +91,9 @@ class Model:
         new_project = Project(name, time, tomorrow, self.taskListFromProject)
         self.projectList.append(new_project)
 
-        self.cursor.execute(add_Project, name, time)
-        # Make sure data is committed to the database
-        self.connection.commit()
+        # self.cursor.execute(add_Project, name, time)
+        # # Make sure data is committed to the database
+        # self.connection.commit()
 
     ########################## ADD TASK ##########################
     def add_Task(self, name, time, status, state):
@@ -106,9 +108,9 @@ class Model:
         new_task = Task(name, time, status, state, 0)
         self.taskListFromProject.append(new_task)
 
-        self.cursor.execute(add_Task, name, time, status, state)
-        # Make sure data is committed to the database
-        self.connection.commit() 
+        # self.cursor.execute(add_Task, name, time, status, state)
+        # # Make sure data is committed to the database
+        # self.connection.commit() 
         
     #def get_Users(self) :
 
