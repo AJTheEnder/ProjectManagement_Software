@@ -55,9 +55,15 @@ class Controller :
         self.model.add_User(username, password)
         self.refresh(1)
         
-    def ask_For_Add_Project_And_Tasks(self, project_Name, project_Time, tasks_List_From_Project) :
-        self.model.add_Project(project_Name, project_Time, tasks_List_From_Project)
-        self.refresh(1) 
+    def ask_For_Add_Project(self, project_Name, project_Time) :
+        self.model.add_Project(project_Name, project_Time) 
+        
+    def ask_For_Add_Task(self, task_Name, task_Time, task_Status, task_State, parent):
+        result = self.model.find_Project(parent)
+        if(result == 0) :
+            print('\n   The TASK parent is not valid, try again \n')
+        else :
+            self.model.add_Task(task_Name, task_Time, task_Status, task_State, parent)
         
     def ask_For_Get_All_Users(self) :
         return self.model.userList 

@@ -116,16 +116,16 @@ class View :
         print('\nPROJECT CREATION PAGE\n')
         project_Name = input('\nEnter a PROJECT NAME : \n')
         project_Time = input('\nEnter the TOTAL TIME of the project : \n')
-        tasks_List_From_Project = []
         choice = input('\nDo you want to create a task for this project ? YES/NO\n')
+        self.controller.ask_For_Add_Project(project_Name, project_Time)
         while(choice == 'YES') :
             task_Name = input('\n   Enter the TASK NAME : \n')
             task_Time = input('\n   Enter the TOTAL TIME of the task : \n')
             task_Status = input('\n   Enter the TASK STATUS (BACKLOG / IN PROGRESS / READY / IN REVIEW / DONE) : \n')
             task_State = input('\n   Enter the TASK STATE (OPEN / CLOSE) : \n')
-            tasks_List_From_Project.append([task_Name, task_Time, task_Status, task_State])
+            self.controller.ask_For_Add_Task(task_Name, task_Time, task_Status, task_State, project_Name)
             choice = input('\nDo you want to create a task for this project ? YES/NO\n')
-        self.controller.ask_For_Add_Project_And_Tasks(project_Name, project_Time, tasks_List_From_Project)
+        self.controller.refresh(1)
                
     # This page shows the informations of the current user. 
     def show_Account_Page(self) :

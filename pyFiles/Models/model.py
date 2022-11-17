@@ -75,7 +75,7 @@ class Model:
         self.connection.commit()
         
     ######################### ADD PROJECT #########################
-    def add_Project(self, name, time, tasks):
+    def add_Project(self, name, time):
 
         tomorrow = datetime.now().date()
 
@@ -84,11 +84,8 @@ class Model:
         add_Project = '''INSERT INTO Projet  
                       (DateCreation, nom, Temps) 
                       VALUES ('%s', '%s', '%s')'''%project_Data
-
-        for i in range(len(tasks)) :
-            self.taskListFromProject.append(Task(tasks[i][0], tasks[i][1], tasks[i][2], tasks[i][3], 0))
         
-        new_project = Project(name, time, tomorrow, self.taskListFromProject)
+        new_project = Project(name, time, tomorrow)
         self.projectList.append(new_project)
 
         self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
@@ -97,23 +94,30 @@ class Model:
         self.connection.commit()
 
     ########################## ADD TASK ##########################
-    def add_Task(self, name, time, status, state):
+    def add_Task(self, name, time, status, state, parent):
 
         task_Data = (name, time, status, state)
 
         add_Task = '''INSERT INTO Tache  
-                   (name, time, status, state) 
+                   (nom, Temps, Status, Etat) 
                    VALUES ('%s', '%s', '%s', '%s')'''%task_Data
 
-
-        new_task = Task(name, time, status, state, 0)
-        self.taskListFromProject.append(new_task)
+        new_task = Task(name, time, status, state)
+        self.currentProject.tasks.append(new_task)
 
         self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
         self.cursor.execute(add_Task) #, name, time, status, state
         self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
 
         self.connection.commit()
+        
+    ####################### FIND PROJECT ########################
+    def find_Project(self, name) :
+        for i in range(len(self.projectList)) :
+            if(self.projectList[i].name == name) :
+                self.currentProject = self.projectList[i]
+                return self.projectList[i]
+        return 0
         
     #def get_Users(self) :
 

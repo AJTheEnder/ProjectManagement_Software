@@ -4,7 +4,6 @@ from mysql.connector import Error
 
 class User:
 	def __init__(self, name, password):
-		self.id = id
 		self.name = name	
 		self.password = password
 
