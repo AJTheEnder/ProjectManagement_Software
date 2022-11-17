@@ -77,7 +77,7 @@ class Model:
     ######################### ADD PROJECT #########################
     def add_Project(self, name, time, tasks):
 
-        tomorrow = datetime.now().date() + timedelta(days=1)
+        tomorrow = datetime.now().date()
 
         project_Data = (tomorrow, name, time)
         
@@ -91,9 +91,10 @@ class Model:
         new_project = Project(name, time, tomorrow, self.taskListFromProject)
         self.projectList.append(new_project)
 
-        # self.cursor.execute(add_Project, name, time)
-        # # Make sure data is committed to the database
-        # self.connection.commit()
+        self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
+        self.cursor.execute(add_Project) #, name, time
+        self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
+        self.connection.commit()
 
     ########################## ADD TASK ##########################
     def add_Task(self, name, time, status, state):
@@ -108,9 +109,11 @@ class Model:
         new_task = Task(name, time, status, state, 0)
         self.taskListFromProject.append(new_task)
 
-        # self.cursor.execute(add_Task, name, time, status, state)
-        # # Make sure data is committed to the database
-        # self.connection.commit() 
+        self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
+        self.cursor.execute(add_Task) #, name, time, status, state
+        self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
+
+        self.connection.commit()
         
     #def get_Users(self) :
 
