@@ -32,17 +32,27 @@ class Model:
     # This function is called at the begining of the program in order to link all datas from DB to the program
     def Start(self):
         try:
-            self.connection = mysql.connector.connect(host='mysql-rdefaria.alwaysdata.net',
-                                                      database='rdefaria_projectmanagement',
-                                                      user='rdefaria',
-                                                      password='petitdeuf1')
             if self.connection.is_connected():
                 db_Info = self.connection.get_server_info()
                 print("Connected to MySQL Server version ", db_Info)
                 self.cursor = self.connection.cursor()
-                self.cursor.execute("select database();")
-                record = self.cursor.fetchone()
-                print("You're connected to database: ", record)
+
+                self.cursor.execute("SELECT nom FROM Administrateur")
+                name_administrateur = self.cursor.fetchone()
+                print("rdefaria_projectmanagement", name_administrateur)
+                
+                self.cursor.execute("SELECT nom FROM Employe")
+                name_employe = self.cursor.fetchone()
+                print("rdefaria_projectmanagement", name_employe)
+
+                self.cursor.execute("SELECT nom FROM GestionnaireDeProjet")
+                name_gestionnaire = self.cursor.fetchone()
+                print("rdefaria_projectmanagement", name_gestionnaire)
+
+                self.userList.append(name_administrateur)
+                self.userList.append(name_employe)
+                self.userList.append(name_gestionnaire)
+                print(self.userList)
                 return False
 
         except Error as e:
