@@ -80,7 +80,7 @@ class View :
         username = input('\nEnter a USERNAME : \n')
         password = input('\nEnter a PASSWORD : \n')
         status = input('\nEnter your STATUS (Employee : 0 / Project owner : 1 / Admin : 2) : \n')
-        while status != 0 & status != 1 & status != 2 :
+        while(status != '0' and status != '1' and status != '2') :
             print('\nWRONG ANSWER\n')
             status = input('\nEnter your STATUS (Employee : 0 / Project owner : 1 / Admin : 2) : \n')
         self.controller.ask_For_Add_User(username, password, status)    

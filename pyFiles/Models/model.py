@@ -40,7 +40,8 @@ class Model:
             if self.connection.is_connected():
                 db_Info = self.connection.get_server_info()
                 print("Connected to MySQL Server version ", db_Info)
-                self.cursor = self.connection.cursor()
+                self.cursor = self.connection.cursor(buffered=True)
+                #self.cursor.execute("select database();")
 
                 self.cursor.execute("SELECT nom FROM Administrateur")
                 name_administrateur = self.cursor.fetchone()
@@ -76,27 +77,39 @@ class Model:
 
         user_Data = (name)
         
-        if(status == 0) :
+        if(status == '0') :
             add_User = '''INSERT INTO Employe 
                        (nom) 
                        VALUES ('%s')'''%user_Data
-        if(status == 1) :
-            add_User = '''INSERT INTO Gestionnaire_de_projet 
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
+            self.cursor.execute(add_User)
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
+            self.connection.commit()
+        # Make sure data is committed to the database
+        if(status == '1') :
+            add_User = '''INSERT INTO GestionnaireDeProjet 
                        (nom) 
                        VALUES ('%s')'''%user_Data
-        if(status == 2) :
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
+            self.cursor.execute(add_User)
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
+            self.connection.commit()
+            # Make sure data is committed to the database
+        if(status == '2') :
             add_User = '''INSERT INTO Administrateur 
                        (nom) 
                        VALUES ('%s')'''%user_Data
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
+            self.cursor.execute(add_User)
+            self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
+            self.connection.commit()
+            # Make sure data is committed to the database
 
         new_user = User(name, password, status)
         self.userList.append(new_user)
 
-        self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
-        self.cursor.execute(add_User)
-        self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
-        # Make sure data is committed to the database
-        self.connection.commit()
+        
+        
         
     ######################### ADD PROJECT #########################
     def add_Project(self, name, time):
