@@ -67,15 +67,24 @@ class Model:
             print("MySQL connection is closed")
 
     ########################## ADD USER ##########################
-    def add_User(self, name, password):
+    def add_User(self, name, password, status):
 
         user_Data = (name)
         
-        add_User = '''INSERT INTO Employe 
-                   (nom) 
-                   VALUES ('%s')'''%user_Data
+        if(status == 0) :
+            add_User = '''INSERT INTO Employe 
+                       (nom) 
+                       VALUES ('%s')'''%user_Data
+        if(status == 1) :
+            add_User = '''INSERT INTO Gestionnaire_de_projet 
+                       (nom) 
+                       VALUES ('%s')'''%user_Data
+        if(status == 2) :
+            add_User = '''INSERT INTO Administrateur 
+                       (nom) 
+                       VALUES ('%s')'''%user_Data
 
-        new_user = User(name, password)
+        new_user = User(name, password, status)
         self.userList.append(new_user)
 
         self.cursor.execute("SET FOREIGN_KEY_CHECKS=0")
@@ -121,6 +130,14 @@ class Model:
 
         self.connection.commit()
         
+    ######################### FIND USER #########################
+    def find_User(self, name) :
+        for i in range(len(self.userList)) :
+            if(self.userList[i].name == name) :
+                self.currentUser = self.userList[i]
+                return self.userList[i]
+        return 0
+    
     ####################### FIND PROJECT ########################
     def find_Project(self, name) :
         for i in range(len(self.projectList)) :
@@ -128,17 +145,19 @@ class Model:
                 self.currentProject = self.projectList[i]
                 return self.projectList[i]
         return 0
-        
-    #def get_Users(self) :
-
-
-
     
-        
-
-
-        
-
-
-
-
+    ######################### FIND TASK #########################
+    def find_Task(self, name, project) :
+        for i in range(len(project.tasks)) :
+            if(project.tasks[i].name == name) :
+                self.currentTask = project.tasks[i]
+                return project.tasks[i]
+        return 0
+    
+    ####################### FIND SUBTASK ########################
+    def find_Subtask(self, name, task) :
+        for i in range(len(task.subtasks)) :
+            if(task.subtasks[i].name == name) :
+                self.currentTask = task.subtask[i]
+                return task.subtasks[i]
+        return 0
