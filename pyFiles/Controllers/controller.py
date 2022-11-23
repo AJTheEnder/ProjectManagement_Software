@@ -51,8 +51,8 @@ class Controller :
     def add_View(self, view) :
         self.view = view
         
-    def ask_For_Add_User(self, username, password) :
-        self.model.add_User(username, password)
+    def ask_For_Add_User(self, username, password, status) :
+        self.model.add_User(username, password, status)
         self.refresh(1)
         
     def ask_For_Add_Project(self, project_Name, project_Time) :

@@ -79,7 +79,11 @@ class View :
         print('\nACCOUNT CREATION PAGE\n')
         username = input('\nEnter a USERNAME : \n')
         password = input('\nEnter a PASSWORD : \n')
-        self.controller.ask_For_Add_User(username, password)    
+        status = input('\nEnter your STATUS (Employee : 0 / Project owner : 1 / Admin : 2) : \n')
+        while status != 0 & status != 1 & status != 2 :
+            print('\nWRONG ANSWER\n')
+            status = input('\nEnter your STATUS (Employee : 0 / Project owner : 1 / Admin : 2) : \n')
+        self.controller.ask_For_Add_User(username, password, status)    
 
     # This page shows the projects you are owning in function of your user status. This page is inaccessible for 
     # regular employees.    
