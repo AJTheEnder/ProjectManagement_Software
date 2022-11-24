@@ -205,3 +205,28 @@ class Model:
         
         self.cursor.execute(update_Employee_Foreign_Key)
         self.connection.commit()
+
+    #################### LINK TASKPROJECT #####################
+    def link_Task_Project(self, project, task) :
+        task_data = (task.name)
+        project_data = (project.name)
+        
+        ## Query to register the id of the demanded elements
+        # select_Task = '''SELECT id FROM Tache
+        #                  WHERE (nom) = ('%s')'''%task_data
+        select_Project = '''SELECT id FROM Projet
+                         WHERE (nom) = ('%s')'''%project_data
+                         
+        # self.cursor.execute(select_Task)
+        # task_Result = self.cursor.fetchone()
+        self.cursor.execute(select_Project)
+        project_Result = self.cursor.fetchone()
+        
+        result = (project_Result[0])
+        
+        # Query to make the connection in the intermediate table
+        update_Project_Foreign_Key = '''UPDATE Tache SET (ProjetID) = (%s) WHERE (nom) = (%s)'''
+        input_data = (project_Result, task_data)
+        
+        self.cursor.execute(update_Project_Foreign_Key, input_data)
+        self.connection.commit()

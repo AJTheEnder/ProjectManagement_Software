@@ -56,6 +56,7 @@ class View :
                   '\n3 -- show all users\n'
                   '\n4 -- show all project with their tasks\n'
                   '\n5 -- link an employee to a task\n'
+                  '\n6 -- link an project to a task\n'
                   )
             choice = input('\nCHOICE : \n')
             if(choice == '1') :
@@ -72,6 +73,9 @@ class View :
                 valid_Choice = True
             elif(choice == '5') :
                 self.controller.refresh(9)
+                valid_Choice = True
+            elif(choice == '6') :
+                self.controller.refresh(10)
                 valid_Choice = True
             else :
                 print('\nINVALID CHOICE\n')
@@ -154,4 +158,12 @@ class View :
         employee_Name = input('\nEnter an employee NAME to link : \n')
         task_Name = input('\nEnter a task NAME to link : \n')
         self.controller.ask_For_Link_Employee_And_Task(employee_Name, task_Name)
+        self.controller.refresh(1)
+
+        
+    def link_Project_To_Task_Page(self) :
+        print('\nLINK PROJECT TO TASK PAGE\n')
+        project_Name = input('\nEnter a project NAME to link a task to: \n')
+        task_Name = input('\nEnter a task NAME to link : \n')
+        self.controller.ask_For_Link_Project_And_Task(project_Name, task_Name)
         self.controller.refresh(1)
