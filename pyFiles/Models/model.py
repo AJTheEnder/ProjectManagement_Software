@@ -179,3 +179,29 @@ class Model:
                 self.currentTask = task.subtask[i]
                 return task.subtasks[i]
         return 0
+    
+    #################### LINK EMPLOYEETASK #####################
+    def link_Employee_Task(self, employee, task) :
+        employee_data = (employee.name)
+        task_data = (task.name)
+        
+        # Query to register the id of the demanded elements
+        select_Employee = '''SELECT id FROM Employe
+                          WHERE (nom) = ('%s')'''%employee_data
+        select_Task = '''SELECT id FROM Tache
+                         WHERE (nom) = ('%s')'''%task_data
+                         
+        self.cursor.execute(select_Employee)
+        employee_Result = self.cursor.fetchone()
+        self.cursor.execute(select_Task)
+        task_Result = self.cursor.fetchone()
+        
+        result = (employee_Result[0], task_Result[0])
+        
+        # Query to make the connection in the intermediate table
+        update_Employee_Foreign_Key = '''INSERT INTO EmployeTaches
+                                         (EmployeID, TachesID)
+                                         VALUES (%s, %s)'''%result
+        
+        self.cursor.execute(update_Employee_Foreign_Key)
+        self.connection.commit()

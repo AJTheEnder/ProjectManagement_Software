@@ -46,6 +46,9 @@ class Controller :
         elif(view_Type == 8) :
             self.view.current_View = 8
             self.view.show_Account_Page()
+        elif(view_Type == 9) :
+            self.view.current_View = 9
+            self.view.link_Employee_To_Task_Page()
             
     # Make the connection between the controller and the view
     def add_View(self, view) :
@@ -70,3 +73,11 @@ class Controller :
     
     def ask_For_Get_All_Projects_And_Tasks(self) :
         return self.model.projectList  
+    
+    def ask_For_Link_Employee_And_Task(self, employee_Name, task_Name) :
+        result_Employee = self.model.find_User(employee_Name)
+        result_Task = self.model.find_Task(task_Name)
+        if(result_Employee == 0 or result_Task == 0) :
+            print('\nThe TASK name or the USER name are not valid, try again\n')
+        else :
+            self.model.link_Employee_Task(self.model.currentUser, self.model.currentTask)
