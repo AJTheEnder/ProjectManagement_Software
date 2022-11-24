@@ -42,23 +42,33 @@ class Model:
                 print("Connected to MySQL Server version ", db_Info)
                 self.cursor = self.connection.cursor(buffered=True)
                 #self.cursor.execute("select database();")
+                
 
                 self.cursor.execute("SELECT nom FROM Administrateur")
-                name_administrateur = self.cursor.fetchone()
-                print("rdefaria_projectmanagement", name_administrateur)
+                name_administrateur = self.cursor.fetchall()
+                #print("Administrateur", name_administrateur)
                 
                 self.cursor.execute("SELECT nom FROM Employe")
-                name_employe = self.cursor.fetchone()
-                print("rdefaria_projectmanagement", name_employe)
+                name_employe = self.cursor.fetchall()
+                #print("Employé", name_employe)
 
                 self.cursor.execute("SELECT nom FROM GestionnaireDeProjet")
-                name_gestionnaire = self.cursor.fetchone()
-                print("rdefaria_projectmanagement", name_gestionnaire)
+                name_gestionnaire = self.cursor.fetchall()
+                #print("Gestionnaire de projet", name_gestionnaire)
 
-                self.userList.append(name_administrateur)
-                self.userList.append(name_employe)
-                self.userList.append(name_gestionnaire)
-                print(self.userList)
+                collect_user_admin = User(name_administrateur, None, 2)
+                collect_user_employe = User(name_employe, None, 0)
+                collect_user_gestionnaire = User(name_gestionnaire, None, 1)
+                self.userList.append(collect_user_admin)
+                self.userList.append(collect_user_employe)
+                self.userList.append(collect_user_gestionnaire)
+
+                self.cursor.execute("SELECT nom FROM Projet")
+                name_projet = self.cursor.fetchall()
+                #print("Projets", projet)
+                projet_name = Project(name_projet, None, None)
+                self.projectList.append(projet_name)
+                
                 return False
 
         except Error as e:
