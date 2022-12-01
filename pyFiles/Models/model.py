@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 from Class.project import Project
 from Class.task import Task
 from Class.user import User
+from Class.subtask import Subtask
 # Import SQL module for Controlling DB
 import mysql.connector
 from mysql.connector import Error
@@ -41,24 +42,87 @@ class Model:
                 db_Info = self.connection.get_server_info()
                 print("Connected to MySQL Server version ", db_Info)
                 self.cursor = self.connection.cursor(buffered=True)
-                #self.cursor.execute("select database();")
-
+                
+            #fill user list    
                 self.cursor.execute("SELECT nom FROM Administrateur")
-                name_administrateur = self.cursor.fetchone()
-                print("rdefaria_projectmanagement", name_administrateur)
+                name_administrateur = self.cursor.fetchall()
+                #print("Administrateur", name_administrateur)
                 
                 self.cursor.execute("SELECT nom FROM Employe")
-                name_employe = self.cursor.fetchone()
-                print("rdefaria_projectmanagement", name_employe)
+                name_employe = self.cursor.fetchall()
+                #print("Employé", name_employe)
 
                 self.cursor.execute("SELECT nom FROM GestionnaireDeProjet")
-                name_gestionnaire = self.cursor.fetchone()
-                print("rdefaria_projectmanagement", name_gestionnaire)
+                name_gestionnaire = self.cursor.fetchall()
+                #print("Gestionnaire de projet", name_gestionnaire)
 
-                self.userList.append(name_administrateur)
-                self.userList.append(name_employe)
-                self.userList.append(name_gestionnaire)
-                print(self.userList)
+                for x in range(len(name_administrateur)) :
+                    collect_user_admin = User(name_administrateur[x][0], None, 2)
+                    self.userList.append(collect_user_admin)
+                for y in range(len(name_employe)) :
+                    collect_user_employe = User(name_employe[y][0], None, 0)
+                    self.userList.append(collect_user_employe)
+                for z in range(len(name_gestionnaire)) :
+                    collect_user_gestionnaire = User(name_gestionnaire[z][0], None, 1)
+                    self.userList.append(collect_user_gestionnaire)
+
+                for i in range(len(self.userList)) :
+                    print(self.userList[i].name)
+            #fill project   
+                self.cursor.execute("SELECT nom,Temps,DateCreation,ID FROM Projet")
+                name_projet = self.cursor.fetchall()               
+                for x in range(len(name_projet)):
+                    projet_name = Project(name_projet[x][0], name_projet[x][1], name_projet[x][2])
+                    self.projectList.append(projet_name)
+                    #fill project tasks list
+                    self.cursor.execute("SELECT nom,Temps,Status,Etat,ID FROM Tache WHERE ProjetID = ('%s')"%name_projet[x][3])
+                    TaskIDFromProjectID = self.cursor.fetchall()
+                    for y in range(len(TaskIDFromProjectID)):
+                        TaskFromProject = Task(TaskIDFromProjectID[y][0], TaskIDFromProjectID[y][1], TaskIDFromProjectID[y][2], TaskIDFromProjectID[y][3],TaskIDFromProjectID[y][4])
+                        projet_name.tasks.append(TaskFromProject)
+                        #fill Tasks subtasks list 
+                        self.cursor.execute("SELECT nom,Temps,Status,Etat FROM SousTache WHERE TacheID = ('%s')"%TaskIDFromProjectID[y][4])
+                        SubTaskIDFromTask = self.cursor.fetchall()
+                        for z in range(len(SubTaskIDFromTask)):
+                            SubTaskFromProject = Subtask(SubTaskIDFromTask[z][0], SubTaskIDFromTask[z][1], SubTaskIDFromTask[z][2], SubTaskIDFromTask[z][3])  
+                            projet_name.tasks[y].subtasks.append(SubTaskFromProject)                                     
+
+                '''for x in range(len(self.projectList)) :
+                    print("\n",self.projectList[x].name,"\n")
+                    for y in range(len(self.projectList[x].tasks)):
+                        print("\n   ",self.projectList[x].tasks[y].name,"\n")
+                        for z in range(len(self.projectList[x].tasks[y].subtasks)):
+                            print("\n   ",self.projectList[x].tasks[y].subtasks[z].name,"\n")'''
+
+                #fill Tasks employee list              
+                self.cursor.execute ("SELECT ID,nom,ProjetID FROM Tache")
+                TacheID = self.cursor.fetchall()
+                self.cursor.execute ("SELECT TachesID,EmployeID FROM EmployeTaches")
+                LinkID = self.cursor.fetchall()
+                for x in range((len(TacheID))):
+                    self.cursor.execute ("SELECT nom FROM Projet WHERE ID = ('%s')"%TacheID[x][2])
+                    ProjetParent = self.cursor.fetchone()
+                    result_Projet = self.find_Project(ProjetParent[0])
+                    for y in range ((len(LinkID))):
+                        if(LinkID[y][0] == TacheID[x][0]):
+                            self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID[y][1])
+                            EmployeFromTask = self.cursor.fetchall()
+                            for z in range((len(EmployeFromTask))):
+                                result_User = self.find_User(EmployeFromTask[z][0])
+                                result_Task = self.find_Task(TacheID[x][1],self.currentProject)
+                                self.currentTask.employees.append(self.currentUser)
+
+                '''for x in range(len(self.projectList)):
+                    print("\n",self.projectList[x].name,"\n")
+                    for y in range(len(self.projectList[x].tasks)):
+                        print("\n   ",self.projectList[x].tasks[y].name,"\n")
+                        for z in range(len(self.projectList[x].tasks[y].employees)):
+                            print("\n     ",self.projectList[x].tasks[y].employees[z].name,"\n")'''
+                
+                #fill user project,task
+
+
+
                 return False
 
         except Error as e:
