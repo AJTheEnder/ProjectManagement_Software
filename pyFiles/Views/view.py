@@ -155,16 +155,23 @@ class View :
     #-----------------------#
     
     def Test(self) :
-        print('\nLINK EMPLOYEE TO TASK PAGE\n')
-        employee_Name = input('\nEnter an employee NAME to link : \n')
+        print('\nALL LINK TESTS\n')
+        
+        employee_Name = input('\nEnter an employee NAME to link a project to : \n')
+        project_Name = input('\nEnter a project NAME to link : \n')
+        self.controller.ask_For_Link_Employee_And_Project(employee_Name, project_Name)
+        
+        employee_Name = input('\nEnter an employee NAME to link a task to : \n')
         task_Name = input('\nEnter a task NAME to link : \n')
         self.controller.ask_For_Link_Employee_And_Task(employee_Name, task_Name)
-        self.controller.refresh(1)
-
         
-    def link_Project_To_Task_Page(self) :
-        print('\nLINK PROJECT TO TASK PAGE\n')
-        project_Name = input('\nEnter a project NAME to link a task to: \n')
+        employee_Name = input('\nEnter a project owner NAME to link to a project : \n')
+        project_Name = input('\nEnter a project NAME to link : \n')
+        self.controller.ask_For_Link_Projectowner_And_Project(project_Name, employee_Name)
+        
+        project_Name = input('\nEnter a project NAME to link a task to : \n')
         task_Name = input('\nEnter a task NAME to link : \n')
         self.controller.ask_For_Link_Project_And_Task(project_Name, task_Name)
-        self.controller.refresh(1)
+        
+        #task_Name = input('\nEnter a task NAME to link a subtask to: \n')
+        #subtask_Name = input('\nEnter a subtask NAME to link : \n')
