@@ -1,20 +1,67 @@
-# Import Classes for the view to recognize DB datas
 import Class.project
 import Class.task
 import Class.user
 
 # Import necessaries for PyQT
 import sys
-from PySide6.QtWidgets import QtCore, QtWidgets, QtGui
+import random
+from PySide6 import QtCore, QtWidgets, QtGui
 
-# The view class from the MVC model
-class View :
-    # Constructor of the class
-    def __init__(self, controller) :
-        self.current_View = 0
-        self.controller = controller
-        
-    # This page occures when the connection to the DB has fail and shows an error message
+class MyWidget(QtWidgets.QWidget):
+    # def __init__(self):
+    #     super().__init__()
+    #     self.controller = 0
+
+    #     self.text = QtWidgets.QLabel("PROJECT LIST",
+    #                                  alignment=QtCore.Qt.AlignTop)
+
+    #     self.newProject = QtWidgets.QPushButton("Add New Project",
+    #                                  aligment=QtCore.Qt.AlignRight)
+
+    #     projects_List = self.controller.ask_For_Get_All_Projects_And_Tasks()
+
+    #     for i in range(len(projects_List)) :
+    #         self.text = QtWidgets.QLabel('Project Name : ', projects_List[i].name,
+    #                                  alignment=QtCore.Qt.AlignVCenter)
+
+    #         self.text = QtWidgets.QLabel('\nThis project takes', projects_List[i].time, 'in total',
+    #                                  aligment=QtCore.Qt.AlignVCenter)
+
+    #         self.viewTasks = QtWidgets.QPushButton("View Tasks")
+
+
+    #     self.layout = QtWidgets.QVBoxLayout(self)
+    #     self.layout.addWidget(self.text)
+    #     self.layout.addWidget(self.button)
+
+    #     self.viewTasks.clicked.connect(self.changeToTasks)
+    #     self.newProject.clicked.connect(self.changeToProjectCreation)
+
+    def __init__(self, controller):
+        super().__init__()
+
+        self.profil_Button = QtWidgets.QPushButton("Profil")
+        self.text = QtWidgets.QLabel("Hello World",
+                                    alignment=QtCore.Qt.AlignCenter)
+
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.layout.addWidget(self.text)
+        self.layout.addWidget(self.profil_Button)
+
+        self.profil_Button.clicked.connect(self.show_Account_Page)
+
+    # @QtCore.Slot()
+
+                # This page shows the informations of the current user. 
+    def show_Account_Page(self) :
+        print('\nACCOUNT PAGE\n')
+        users_List = self.controller.ask_For_Get_All_Users()
+        for i in range(len(users_List)) :
+            print('\n\nUser NAME : ', users_List[i].name)
+            print('\nUser PASSWORD ', users_List[i].password)
+        end = input('\n\nPress ENTER to go back to MENU\n')
+        self.controller.refresh(1)
+
     def show_Connection_Error_Page(self) :
         print('\nERROR TO CONNECTION DATABASE\n')
 
@@ -150,37 +197,18 @@ class View :
         #task_Name = input('\nEnter a task NAME to link a subtask to: \n')
         #subtask_Name = input('\nEnter a subtask NAME to link : \n')
 
-# class MyWidget(QtWidgets.QWidget):
-#     def __init__(self):
-#         super().__init__()
 
-#         self.profil_Button = QtWidgets.QPushButton("Profil")
-#         self.text = QtWidgets.QLabel("Hello World",
-#                                     alignment=QtCore.Qt.AlignCenter)
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv) 
+    label = QtWidgets.QLabel("Hello World", alignment=QtWidgets.AlignCenter)
+    label.show()
+    widget = MyWidget()
+    widget.resize(800, 600)
+    widget.show()
+    sys.exit(app.exec())
 
-#         self.layout = QtWidgets.QVBoxLayout(self)
-#         self.layout.addWidget(self.text)
-#         self.layout.addWidget(self.button)
+    #@QtCore.Slot()
+    #def changeToTasks(self):
 
-#         self.profil_Button.clicked.connect(self.show_Account_Page)
-
-#     @QtCore.Slot()
-
-#                 # This page shows the informations of the current user. 
-#     def show_Account_Page(self) :
-#         print('\nACCOUNT PAGE\n')
-#         users_List = self.controller.ask_For_Get_All_Users()
-#         for i in range(len(users_List)) :
-#             print('\n\nUser NAME : ', users_List[i].name)
-#             print('\nUser PASSWORD ', users_List[i].password)
-#         end = input('\n\nPress ENTER to go back to MENU\n')
-#         self.controller.refresh(1)
-
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv) 
-#     label = QLabel("Hello World", alignment=QtWidgets.AlignCenter)
-#     label.show()
-#     widget = MyWidget()
-#     widget.resize(800, 600)
-#     widget.show()
-#     sys.exit(app.exec())
+    #@QtCore.Slot()
+    #def changeToProjectCreation(self):

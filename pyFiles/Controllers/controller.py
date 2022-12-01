@@ -1,20 +1,28 @@
+from PySide6 import QtCore, QtWidgets, QtGui
+import sys
+
 # The controller class from the MVC model
 class Controller :
     # Constructor of the class
-    def __init__(self, model) :
+    def __init__(self, model, app) :
         self.model = model
-        self.view = 0
+        self.view = []
+        self.app = app
             
     # This function starts the program (start the model and show the initial widget of the program)
     def start(self) :
         errorStatus = self.model.Start()
+        print(errorStatus)
         if(errorStatus) :
             # If the model didn't connect to the DB show the error page.
             # self.view.show_Connection_Error_Page()
             self.view.show_Connection_Page()
         else :
-            # If the model did connect to the DB show the connection page.
-            self.view.show_Connection_Page()
+            # label = QtWidgets.QLabel("Hello World", alignment=QtWidgets.AlignCenter)
+            # label.show()
+            self.view[0].resize(800, 600)
+            self.view[0].show()
+            sys.exit(self.app.exec())
             
     # This function is called whenether the view has to be change or refresh. It changes the current 
     # widget of the program.
@@ -52,7 +60,7 @@ class Controller :
             
     # Make the connection between the controller and the view
     def add_View(self, view) :
-        self.view = view
+        self.view.append(view)
         
     def ask_For_Add_User(self, username, password, status) :
         self.model.add_User(username, password, status)
