@@ -9,5 +9,6 @@ class Task:
         self.status = status
         self.state = state
         self.subtasks = []
+        self.employees = []
 
 
