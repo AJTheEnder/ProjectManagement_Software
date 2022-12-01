@@ -135,7 +135,8 @@ class View :
             task_Time = input('\n   Enter the TOTAL TIME of the task : \n')
             task_Status = input('\n   Enter the TASK STATUS (BACKLOG / IN PROGRESS / READY / IN REVIEW / DONE) : \n')
             task_State = input('\n   Enter the TASK STATE (OPEN / CLOSE) : \n')
-            self.controller.ask_For_Add_Task(task_Name, task_Time, task_Status, task_State, project_Name)
+            task_ParentID = input('\n   Enter the parentID : \n')
+            self.controller.ask_For_Add_Task(task_Name, task_Time, task_Status, task_State, project_Name, task_ParentID)
             choice = input('\nDo you want to create a task for this project ? YES/NO\n')
         self.controller.refresh(1)
                
@@ -153,7 +154,7 @@ class View :
     # TEMPORARY FOR TESTING #
     #-----------------------#
     
-    def link_Employee_To_Task_Page(self) :
+    def Test(self) :
         print('\nLINK EMPLOYEE TO TASK PAGE\n')
         employee_Name = input('\nEnter an employee NAME to link : \n')
         task_Name = input('\nEnter a task NAME to link : \n')

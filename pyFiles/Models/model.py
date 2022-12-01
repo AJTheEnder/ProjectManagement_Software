@@ -42,33 +42,23 @@ class Model:
                 print("Connected to MySQL Server version ", db_Info)
                 self.cursor = self.connection.cursor(buffered=True)
                 #self.cursor.execute("select database();")
-                
 
                 self.cursor.execute("SELECT nom FROM Administrateur")
-                name_administrateur = self.cursor.fetchall()
-                #print("Administrateur", name_administrateur)
+                name_administrateur = self.cursor.fetchone()
+                print("rdefaria_projectmanagement", name_administrateur)
                 
                 self.cursor.execute("SELECT nom FROM Employe")
-                name_employe = self.cursor.fetchall()
-                #print("Employé", name_employe)
+                name_employe = self.cursor.fetchone()
+                print("rdefaria_projectmanagement", name_employe)
 
                 self.cursor.execute("SELECT nom FROM GestionnaireDeProjet")
-                name_gestionnaire = self.cursor.fetchall()
-                #print("Gestionnaire de projet", name_gestionnaire)
+                name_gestionnaire = self.cursor.fetchone()
+                print("rdefaria_projectmanagement", name_gestionnaire)
 
-                collect_user_admin = User(name_administrateur, None, 2)
-                collect_user_employe = User(name_employe, None, 0)
-                collect_user_gestionnaire = User(name_gestionnaire, None, 1)
-                self.userList.append(collect_user_admin)
-                self.userList.append(collect_user_employe)
-                self.userList.append(collect_user_gestionnaire)
-
-                self.cursor.execute("SELECT nom FROM Projet")
-                name_projet = self.cursor.fetchall()
-                #print("Projets", projet)
-                projet_name = Project(name_projet, None, None)
-                self.projectList.append(projet_name)
-                
+                self.userList.append(name_administrateur)
+                self.userList.append(name_employe)
+                self.userList.append(name_gestionnaire)
+                print(self.userList)
                 return False
 
         except Error as e:
@@ -82,6 +72,12 @@ class Model:
             self.connection.close()
             print("MySQL connection is closed")
 
+    '''
+    ||---------------------------------------------||
+    ||                ADD FUNCTIONS                ||
+    ||---------------------------------------------||
+    '''
+    
     ########################## ADD USER ##########################
     def add_User(self, name, password, status):
 
@@ -116,10 +112,7 @@ class Model:
             # Make sure data is committed to the database
 
         new_user = User(name, password, status)
-        self.userList.append(new_user)
-
-        
-        
+        self.userList.append(new_user) 
         
     ######################### ADD PROJECT #########################
     def add_Project(self, name, time):
@@ -141,13 +134,13 @@ class Model:
         self.connection.commit()
 
     ########################## ADD TASK ##########################
-    def add_Task(self, name, time, status, state, parent):
+    def add_Task(self, name, time, status, state, parent, parentID):
 
-        task_Data = (name, time, status, state)
+        task_Data = (name, time, status, state, int(parentID))
 
         add_Task = '''INSERT INTO Tache  
-                   (nom, Temps, Status, Etat) 
-                   VALUES ('%s', '%s', '%s', '%s')'''%task_Data
+                   (nom, Temps, Status, Etat, ProjetID) 
+                   VALUES ('%s', '%s', '%s', '%s', %s)'''%task_Data
 
         new_task = Task(name, time, status, state)
         self.currentProject.tasks.append(new_task)
@@ -157,6 +150,12 @@ class Model:
         self.cursor.execute("SET FOREIGN_KEY_CHECKS=1")
 
         self.connection.commit()
+        
+    '''
+    ||---------------------------------------------||
+    ||           FIND IN LIST FUNCTIONS            ||
+    ||---------------------------------------------||
+    '''
         
     ######################### FIND USER #########################
     def find_User(self, name) :
@@ -190,6 +189,38 @@ class Model:
                 return task.subtasks[i]
         return 0
     
+    '''
+    ||---------------------------------------------||
+    ||               LINK FUNCTIONS                ||
+    ||---------------------------------------------||
+    '''
+    
+    ################## LINK EMPLOYEEPROJECT ####################
+    def link_Employee_Project(self, employee, project) :
+        employee_data = (employee.name)
+        project_data = (project.name)
+        
+        # Query to register the id of the demanded elements
+        select_Employee = '''SELECT id FROM Employe
+                          WHERE (nom) = ('%s')'''%employee_data
+        select_Project = '''SELECT id FROM Projet
+                         WHERE (nom) = ('%s')'''%project_data
+                         
+        self.cursor.execute(select_Employee)
+        employee_Result = self.cursor.fetchone()
+        self.cursor.execute(select_Project)
+        project_Result = self.cursor.fetchone()
+        
+        result = (employee_Result[0], project_Result[0])
+        
+        # Query to make the connection in the intermediate table
+        update_Employee_Foreign_Key = '''INSERT INTO EmployeProjet
+                                         (EmployeID, ProjetID)
+                                         VALUES (%s, %s)'''%result
+        
+        self.cursor.execute(update_Employee_Foreign_Key)
+        self.connection.commit()
+        
     #################### LINK EMPLOYEETASK #####################
     def link_Employee_Task(self, employee, task) :
         employee_data = (employee.name)
@@ -215,20 +246,42 @@ class Model:
         
         self.cursor.execute(update_Employee_Foreign_Key)
         self.connection.commit()
+        
+        employee.tasks.append(task)
+        task.employee.append(employee)
 
+    ################ LINK PROJECTPROJECTOWNER ##################
+    def link_Project_ProjectOwner(self, project, projectowner) :
+        projectowner_data = (projectowner.name)
+        project_data = (project.name)
+        
+        ## Query to register the id of the demanded elements
+        select_Projectowner = '''SELECT id FROM GestionnaireDeProjet
+                              WHERE (nom) = ('%s')'''%projectowner_data
+                         
+        self.cursor.execute(select_Projectowner)
+        projectowner_Result = self.cursor.fetchone()
+        
+        result = (projectowner_Result[0])
+        
+        # Query to make the connection in the intermediate table
+        update_Projectowner_Foreign_Key = '''UPDATE Tache SET (ProjetID) = (%s) WHERE (nom) = (%s)'''
+        input_data = (projectowner_Result, project_data)
+        
+        self.cursor.execute(update_Projectowner_Foreign_Key, input_data)
+        self.connection.commit()
+        
+        projectowner.projects.append(project)
+    
     #################### LINK TASKPROJECT #####################
     def link_Task_Project(self, project, task) :
         task_data = (task.name)
         project_data = (project.name)
         
         ## Query to register the id of the demanded elements
-        # select_Task = '''SELECT id FROM Tache
-        #                  WHERE (nom) = ('%s')'''%task_data
         select_Project = '''SELECT id FROM Projet
                          WHERE (nom) = ('%s')'''%project_data
                          
-        # self.cursor.execute(select_Task)
-        # task_Result = self.cursor.fetchone()
         self.cursor.execute(select_Project)
         project_Result = self.cursor.fetchone()
         
@@ -240,3 +293,28 @@ class Model:
         
         self.cursor.execute(update_Project_Foreign_Key, input_data)
         self.connection.commit()
+        
+        project.tasks.append(task)
+        
+    #################### LINK TASKSUBTASK ####################
+    def link_Task_Subtask(self, task, subtask) :
+        task_data = (task.name)
+        subtask_data = (subtask.name)
+        
+        ## Query to register the id of the demanded elements
+        select_Task = '''SELECT id FROM Tache
+                         WHERE (nom) = ('%s')'''%task_data
+                         
+        self.cursor.execute(select_Task)
+        task_Result = self.cursor.fetchone()
+        
+        result = (task_Result[0])
+        
+        # Query to make the connection in the intermediate table
+        update_Task_Foreign_Key = '''UPDATE SousTache SET (TacheID) = (%s) WHERE (nom) = (%s)'''
+        input_data = (task_Result, subtask_data)
+        
+        self.cursor.execute(update_Task_Foreign_Key, input_data)
+        self.connection.commit()
+        
+        task.substasks.append(subtask)

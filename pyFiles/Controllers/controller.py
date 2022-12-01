@@ -48,10 +48,7 @@ class Controller :
             self.view.show_Account_Page()
         elif(view_Type == 9) :
             self.view.current_View = 9
-            self.view.link_Employee_To_Task_Page()
-        elif(view_Type == 10) :
-            self.view.current_View = 10
-            self.view.link_Project_To_Task_Page()
+            self.view.Test()
             
     # Make the connection between the controller and the view
     def add_View(self, view) :
@@ -64,18 +61,26 @@ class Controller :
     def ask_For_Add_Project(self, project_Name, project_Time) :
         self.model.add_Project(project_Name, project_Time) 
         
-    def ask_For_Add_Task(self, task_Name, task_Time, task_Status, task_State, parent):
+    def ask_For_Add_Task(self, task_Name, task_Time, task_Status, task_State, parent, parentID):
         result = self.model.find_Project(parent)
         if(result == 0) :
             print('\n   The TASK parent is not valid, try again \n')
         else :
-            self.model.add_Task(task_Name, task_Time, task_Status, task_State, parent)
+            self.model.add_Task(task_Name, task_Time, task_Status, task_State, parent, parentID)
         
     def ask_For_Get_All_Users(self) :
         return self.model.userList 
     
     def ask_For_Get_All_Projects_And_Tasks(self) :
         return self.model.projectList  
+    
+    def ask_For_Link_Employee_And_Project(self, employee_Name, project_Name) :
+        result_Employee = self.model.find_User(employee_Name)
+        result_Project = self.model.find_Project(project_Name)
+        if(result_Employee == 0 or result_Project == 0) :
+            print('\nThe PROJECT name or the USER name are not valid, try again\n')
+        else :
+            self.model.link_Employee_Project(self.model.currentUser, self.model.currentProject)
     
     def ask_For_Link_Employee_And_Task(self, employee_Name, task_Name) :
         result_Employee = self.model.find_User(employee_Name)
@@ -84,6 +89,14 @@ class Controller :
             print('\nThe TASK name or the USER name are not valid, try again\n')
         else :
             self.model.link_Employee_Task(self.model.currentUser, self.model.currentTask)
+            
+    def ask_For_Link_Projectowner_And_Project(self, project_Name, projectowner_Name) :
+        result_Project = self.model.find_Project(project_Name)
+        result_Projectowner = self.model.find_User(projectowner_Name)
+        if(result_Project == 0 or result_Projectowner == 0) :
+            print('\nThe PROJECT name or the PROJECT OWNER name are not valid, try again\n')
+        else :
+            self.model.link_Project_Projectowner(self.model.currentProject, self.model.currentUser)
 
     def ask_For_Link_Project_And_Task(self, project_Name, task_Name) :
         result_Project = self.model.find_Project(project_Name)
@@ -92,3 +105,13 @@ class Controller :
             print('\nThe PROJECT name or the TASK name are not valid, try again\n')
         else :
             self.model.link_Task_Project(self.model.currentProject, self.model.currentTask)
+            
+    def ask_For_Link_Task_And_Subtask(self, task_Name, subtask_Name) :
+        result_Task = self.model.find_Task(task_Name)
+        current_Task = self.model.currentTask
+        result_Subtask = self.model.find_Task(subtask_Name)
+        current_Subtask = self.model.currentTask
+        if(result_Subtask == 0 or result_Task == 0) :
+            print('\nThe TASK name or the SUBTASK name are not valid, try again\n')
+        else :
+            self.model.link_Task_Project(current_Task, current_Subtask)
