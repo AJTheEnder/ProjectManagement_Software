@@ -139,20 +139,30 @@ class Model:
                 #fill user task
                 self.cursor.execute("SELECT nom,ID FROM Employe")
                 emp = self.cursor.fetchall()
+                print('emp:',emp)
                 self.cursor.execute ("SELECT TachesID,EmployeID FROM EmployeTaches")
                 LinkID2 = self.cursor.fetchall()
+                print('link:',LinkID2)
                 for x in range(len(emp)):
                     for y in range(len(LinkID2)):
-                        if(LinkID2[y][0] == emp[x][1]):
-                            self.cursor.execute("SELECT nom FROM Tache WHERE ID =('%s')"%LinkID2[y][1])
+                        if(LinkID2[y][1] == emp[x][1]):
+                            self.cursor.execute("SELECT nom, ProjetID FROM Tache WHERE ID =('%s')"%LinkID2[y][0])
                             TaskFromEmploye = self.cursor.fetchall()
+                            print('taskfromemploye:',TaskFromEmploye)
                             for z in range(len(TaskFromEmploye)):
-                                self.userList.tasks.append(TaskFromEmploye)
+                                self.cursor.execute("SELECT nom FROM Projet WHERE ID =('%s')"%TaskFromEmploye[z][1])
+                                project_Parent = self.cursor.fetchone()
+                                self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID2[y][1])
+                                user_Parent = self.cursor.fetchone()
+                                project_Result = self.find_Project(project_Parent[0])
+                                task_Result = self.find_Task(TaskFromEmploye[z][0], self.currentProject)
+                                user_Result = self.find_User(user_Parent[0])
+                                self.currentUser.tasks.append(self.currentTask)
                 
                 for x in range(len(self.userList)):
                     print("\n",self.userList[x].name,"\n")
                     for y in range(len(self.userList[x].tasks)):
-                        print("\n   ",self.userList[x].tasks[y],"\n")
+                        print("\n   ",self.userList[x].tasks[y].name,"\n")
 
                 return False
 
