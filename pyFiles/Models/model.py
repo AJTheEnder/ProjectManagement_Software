@@ -66,8 +66,9 @@ class Model:
                     collect_user_gestionnaire = User(name_gestionnaire[z][0], None, 1)
                     self.userList.append(collect_user_gestionnaire)
 
-                for i in range(len(self.userList)) :
-                    print(self.userList[i].name)
+                '''for i in range(len(self.userList)) :
+                    print(self.userList[i].name)'''
+
             #fill project   
                 self.cursor.execute("SELECT nom,Temps,DateCreation,ID FROM Projet")
                 name_projet = self.cursor.fetchall()               
@@ -119,9 +120,39 @@ class Model:
                         for z in range(len(self.projectList[x].tasks[y].employees)):
                             print("\n     ",self.projectList[x].tasks[y].employees[z].name,"\n")'''
                 
-                #fill user project,task
+                #fill user project
+                self.cursor.execute("SELECT nom,ID FROM GestionnaireDeProjet")
+                Gestio = self.cursor.fetchall()
+                for x in range ((len(Gestio))):
+                    self.cursor.execute("SELECT nom FROM Projet WHERE GestionnaireID = ('%s')"%Gestio[x][1])
+                    ProjectFromGestionnaire = self.cursor.fetchall()
+                    for y in range ((len(ProjectFromGestionnaire))):
+                        result_User = self.find_User(Gestio[x][0])
+                        result_proj = self.find_Project(ProjectFromGestionnaire[y][0])                        
+                        self.currentUser.projects.append(self.currentProject)
 
+                '''for x in range(len(self.userList)):
+                    print("\n",self.userList[x].name,"\n")
+                    for y in range(len(self.userList[x].projects)):
+                        print("\n   ",self.userList[x].projects[y].name,"\n")'''
 
+                #fill user task
+                self.cursor.execute("SELECT nom,ID FROM Employe")
+                emp = self.cursor.fetchall()
+                self.cursor.execute ("SELECT TachesID,EmployeID FROM EmployeTaches")
+                LinkID2 = self.cursor.fetchall()
+                for x in range(len(emp)):
+                    for y in range(len(LinkID2)):
+                        if(LinkID2[y][0] == emp[x][1]):
+                            self.cursor.execute("SELECT nom FROM Tache WHERE ID =('%s')"%LinkID2[y][1])
+                            TaskFromEmploye = self.cursor.fetchall()
+                            for z in range(len(TaskFromEmploye)):
+                                self.userList.tasks.append(TaskFromEmploye)
+                
+                for x in range(len(self.userList)):
+                    print("\n",self.userList[x].name,"\n")
+                    for y in range(len(self.userList[x].tasks)):
+                        print("\n   ",self.userList[x].tasks[y],"\n")
 
                 return False
 
