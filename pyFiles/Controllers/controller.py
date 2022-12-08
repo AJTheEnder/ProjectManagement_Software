@@ -11,16 +11,18 @@ class Controller :
             
     # This function starts the program (start the model and show the initial widget of the program)
     def start(self) :
+
+        
         errorStatus = self.model.Start()
-        print(errorStatus)
         if(errorStatus) :
-            # If the model didn't connect to the DB show the error page.
-            # self.view.show_Connection_Error_Page()
-            self.view.show_Connection_Page()
-        else :
-            # label = QtWidgets.QLabel("Hello World", alignment=QtWidgets.AlignCenter)
-            # label.show()
             self.view[0].resize(800, 600)
+            self.view[0].show()
+
+            # If the model didn't connect to the DB show the error page.
+            self.view[0].show_Connection_Error_Page()
+            sys.exit(self.app.exec())
+        else :
+            self.view[0].resize(1000, 800)
             self.view[0].show()
             sys.exit(self.app.exec())
             

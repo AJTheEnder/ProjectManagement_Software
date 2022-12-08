@@ -8,39 +8,19 @@ import random
 from PySide6 import QtCore, QtWidgets, QtGui
 
 class MyWidget(QtWidgets.QWidget):
-    # def __init__(self):
-    #     super().__init__()
-    #     self.controller = 0
-
-    #     self.text = QtWidgets.QLabel("PROJECT LIST",
-    #                                  alignment=QtCore.Qt.AlignTop)
-
-    #     self.newProject = QtWidgets.QPushButton("Add New Project",
-    #                                  aligment=QtCore.Qt.AlignRight)
-
-    #     projects_List = self.controller.ask_For_Get_All_Projects_And_Tasks()
-
-    #     for i in range(len(projects_List)) :
-    #         self.text = QtWidgets.QLabel('Project Name : ', projects_List[i].name,
-    #                                  alignment=QtCore.Qt.AlignVCenter)
-
-    #         self.text = QtWidgets.QLabel('\nThis project takes', projects_List[i].time, 'in total',
-    #                                  aligment=QtCore.Qt.AlignVCenter)
-
-    #         self.viewTasks = QtWidgets.QPushButton("View Tasks")
-
-
-    #     self.layout = QtWidgets.QVBoxLayout(self)
-    #     self.layout.addWidget(self.text)
-    #     self.layout.addWidget(self.button)
-
-    #     self.viewTasks.clicked.connect(self.changeToTasks)
-    #     self.newProject.clicked.connect(self.changeToProjectCreation)
 
     def __init__(self, controller):
         super().__init__()
 
+        # widget = QtWidgets.QWidget()
+        # layout = QtGui.QWidget(widget)
+        # widget.setLayout(layout)
+
+        self.controller = controller
+
         self.profil_Button = QtWidgets.QPushButton("Profil")
+        self.profil_Button.setMinimumWidth(150)
+
         self.text = QtWidgets.QLabel("Hello World",
                                     alignment=QtCore.Qt.AlignCenter)
 
@@ -52,22 +32,51 @@ class MyWidget(QtWidgets.QWidget):
 
     # @QtCore.Slot()
 
-                # This page shows the informations of the current user. 
+                # This page shows the informations of the current user.
     def show_Account_Page(self) :
-        print('\nACCOUNT PAGE\n')
+
+        # self.layout = QtWidgets.QVBoxLayout(self)
+        # self.layout.addWidget(self.text)
+
+        self.text = QtWidgets.QLabel("Profil Page",
+                            alignment=QtCore.Qt.AlignTop)
+
+        self.text.show()
+
         users_List = self.controller.ask_For_Get_All_Users()
         for i in range(len(users_List)) :
+
+            self.text = QtWidgets.QLabel("User Name : ", users_List[i].name,
+                     alignment=QtCore.Qt.AlignLeft)
+
             print('\n\nUser NAME : ', users_List[i].name)
             print('\nUser PASSWORD ', users_List[i].password)
         end = input('\n\nPress ENTER to go back to MENU\n')
         self.controller.refresh(1)
 
     def show_Connection_Error_Page(self) :
-        print('\nERROR TO CONNECTION DATABASE\n')
 
-    # This page shows a place to write a username and a password, if the connection has fail show an error message 
-    # if not continue in program in function of the type of user (admin, project owner, employee)  
-    # You can also decide to create a user so you go to account create page. (Temporally the menu page)   
+        # self.layout = QtWidgets.QVBoxLayout(self)
+        self.text = QtWidgets.QLabel("Error to connection of database, \n Please make sure to have an internet connection",
+                            alignment=QtCore.Qt.AlignTop | QtCore.Qt.AlignCenter)
+
+        self.text.resize(300, 100)
+        self.text.show()
+
+        self.connection_page_Button = QtWidgets.QPushButton("Return")
+        self.connection_page_Button.setMinimumWidth(150)
+
+        # self.layout.addWidget(self.connection_page_Button)
+
+        self.connection_page_Button.clicked.connect(self.show_Connection_Page)
+    
+        self.connection_page_Button.show()
+
+
+
+    # This page shows a place to write a username and a password, if the connection has fail show an error message
+    # if not continue in program in function of the type of user (admin, project owner, employee)
+    # You can also decide to create a user so you go to account create page. (Temporally the menu page)
     def show_Connection_Page(self) :
         valid_Choice = False
         while(valid_Choice == False) :
@@ -100,10 +109,10 @@ class MyWidget(QtWidgets.QWidget):
                 valid_Choice = True
             else :
                 print('\nINVALID CHOICE\n')
-            
 
-    # This page lets you create an account with your informations. If you are an admin you have to insert the 
-    # ADMIN KEY, if you are a project owner you have to insert the PROJECT OWNER KEY.    
+
+    # This page lets you create an account with your informations. If you are an admin you have to insert the
+    # ADMIN KEY, if you are a project owner you have to insert the PROJECT OWNER KEY.
     def show_Account_Creation_Page(self) :
         print('\nACCOUNT CREATION PAGE\n')
         username = input('\nEnter a USERNAME : \n')
@@ -112,10 +121,10 @@ class MyWidget(QtWidgets.QWidget):
         while(status != '0' and status != '1' and status != '2') :
             print('\nWRONG ANSWER\n')
             status = input('\nEnter your STATUS (Employee : 0 / Project owner : 1 / Admin : 2) : \n')
-        self.controller.ask_For_Add_User(username, password, status)    
+        self.controller.ask_For_Add_User(username, password, status)
 
-    # This page shows the projects you are owning in function of your user status. This page is inaccessible for 
-    # regular employees.    
+    # This page shows the projects you are owning in function of your user status. This page is inaccessible for
+    # regular employees.
     def show_Projects_Page(self) :
         print('\nPROJECTS PAGE\n')
         projects_List = self.controller.ask_For_Get_All_Projects_And_Tasks()
@@ -136,14 +145,14 @@ class MyWidget(QtWidgets.QWidget):
         print('\nGANTT PROJECT PAGE\n')
 
     # For admins and project owners this page shows all the tasks of a project, for an employee this page shows
-    # all the tasks he is assigned of.    
+    # all the tasks he is assigned of.
     def show_Tasks_Page(self) :
         print('\nTASKS PAGE\n')
-    
-    # This page shows all the sub-tasks of a task/subt-ask.   
+
+    # This page shows all the sub-tasks of a task/subt-ask.
     def show_Subtasks_Page(self) :
         print('\nSUBTASKS PAGE\n')
-        
+
     # This page allow the user to create a project with tasks.
     def show_Create_Project_Page(self) :
         print('\nPROJECT CREATION PAGE\n')
@@ -160,8 +169,8 @@ class MyWidget(QtWidgets.QWidget):
             self.controller.ask_For_Add_Task(task_Name, task_Time, task_Status, task_State, project_Name, task_ParentID)
             choice = input('\nDo you want to create a task for this project ? YES/NO\n')
         self.controller.refresh(1)
-               
-    # This page shows the informations of the current user. 
+
+    # This page shows the informations of the current user.
     def show_Account_Page(self) :
         print('\nACCOUNT PAGE\n')
         users_List = self.controller.ask_For_Get_All_Users()
@@ -170,45 +179,29 @@ class MyWidget(QtWidgets.QWidget):
             print('\nUser PASSWORD ', users_List[i].password)
         end = input('\n\nPress ENTER to go back to MENU\n')
         self.controller.refresh(1)
-        
+
     #-----------------------#
     # TEMPORARY FOR TESTING #
     #-----------------------#
-    
+
     def Test(self) :
         print('\nALL LINK TESTS\n')
-        
+
         employee_Name = input('\nEnter an employee NAME to link a project to : \n')
         project_Name = input('\nEnter a project NAME to link : \n')
         self.controller.ask_For_Link_Employee_And_Project(employee_Name, project_Name)
-        
+
         employee_Name = input('\nEnter an employee NAME to link a task to : \n')
         task_Name = input('\nEnter a task NAME to link : \n')
         self.controller.ask_For_Link_Employee_And_Task(employee_Name, task_Name)
-        
+
         employee_Name = input('\nEnter a project owner NAME to link to a project : \n')
         project_Name = input('\nEnter a project NAME to link : \n')
         self.controller.ask_For_Link_Projectowner_And_Project(project_Name, employee_Name)
-        
+
         project_Name = input('\nEnter a project NAME to link a task to : \n')
         task_Name = input('\nEnter a task NAME to link : \n')
         self.controller.ask_For_Link_Project_And_Task(project_Name, task_Name)
-        
+
         #task_Name = input('\nEnter a task NAME to link a subtask to: \n')
         #subtask_Name = input('\nEnter a subtask NAME to link : \n')
-
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv) 
-    label = QtWidgets.QLabel("Hello World", alignment=QtWidgets.AlignCenter)
-    label.show()
-    widget = MyWidget()
-    widget.resize(800, 600)
-    widget.show()
-    sys.exit(app.exec())
-
-    #@QtCore.Slot()
-    #def changeToTasks(self):
-
-    #@QtCore.Slot()
-    #def changeToProjectCreation(self):
