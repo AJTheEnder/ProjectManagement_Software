@@ -30,6 +30,7 @@ class Model:
         self.connection = 0
         self.cursor = 0
 
+        self.userInUse = 0
     # This function is called at the begining of the program in order to link all datas from DB to the program
     def Start(self):
         try:
@@ -71,22 +72,25 @@ class Model:
 
             #fill project   
                 self.cursor.execute("SELECT nom,Temps,DateCreation,ID FROM Projet")
-                name_projet = self.cursor.fetchall()               
-                for x in range(len(name_projet)):
-                    projet_name = Project(name_projet[x][0], name_projet[x][1], name_projet[x][2])
-                    self.projectList.append(projet_name)
-                    #fill project tasks list
-                    self.cursor.execute("SELECT nom,Temps,Status,Etat,ID FROM Tache WHERE ProjetID = ('%s')"%name_projet[x][3])
-                    TaskIDFromProjectID = self.cursor.fetchall()
-                    for y in range(len(TaskIDFromProjectID)):
-                        TaskFromProject = Task(TaskIDFromProjectID[y][0], TaskIDFromProjectID[y][1], TaskIDFromProjectID[y][2], TaskIDFromProjectID[y][3],TaskIDFromProjectID[y][4])
-                        projet_name.tasks.append(TaskFromProject)
-                        #fill Tasks subtasks list 
-                        self.cursor.execute("SELECT nom,Temps,Status,Etat FROM SousTache WHERE TacheID = ('%s')"%TaskIDFromProjectID[y][4])
-                        SubTaskIDFromTask = self.cursor.fetchall()
-                        for z in range(len(SubTaskIDFromTask)):
-                            SubTaskFromProject = Subtask(SubTaskIDFromTask[z][0], SubTaskIDFromTask[z][1], SubTaskIDFromTask[z][2], SubTaskIDFromTask[z][3])  
-                            projet_name.tasks[y].subtasks.append(SubTaskFromProject)                                     
+                name_projet = self.cursor.fetchall()  
+                if (len(name_projet)!= 0):             
+                    for x in range(len(name_projet)):
+                        projet_name = Project(name_projet[x][0], name_projet[x][1], name_projet[x][2])
+                        self.projectList.append(projet_name)
+                        #fill project tasks list
+                        self.cursor.execute("SELECT nom,Temps,Status,Etat,ID FROM Tache WHERE ProjetID = ('%s')"%name_projet[x][3])
+                        TaskIDFromProjectID = self.cursor.fetchall()
+                        if (len(TaskIDFromProjectID)!= 0):
+                            for y in range(len(TaskIDFromProjectID)):
+                                TaskFromProject = Task(TaskIDFromProjectID[y][0], TaskIDFromProjectID[y][1], TaskIDFromProjectID[y][2], TaskIDFromProjectID[y][3])
+                                projet_name.tasks.append(TaskFromProject)
+                                #fill Tasks subtasks list 
+                                self.cursor.execute("SELECT nom,Temps,Status,Etat FROM SousTache WHERE TacheID = ('%s')"%TaskIDFromProjectID[y][4])
+                                SubTaskIDFromTask = self.cursor.fetchall()
+                                if (len(SubTaskIDFromTask)!= 0):
+                                    for z in range(len(SubTaskIDFromTask)):
+                                        SubTaskFromProject = Subtask(SubTaskIDFromTask[z][0], SubTaskIDFromTask[z][1], SubTaskIDFromTask[z][2], SubTaskIDFromTask[z][3])  
+                                        projet_name.tasks[y].subtasks.append(SubTaskFromProject)                                     
 
                 '''for x in range(len(self.projectList)) :
                     print("\n",self.projectList[x].name,"\n")
@@ -100,18 +104,21 @@ class Model:
                 TacheID = self.cursor.fetchall()
                 self.cursor.execute ("SELECT TachesID,EmployeID FROM EmployeTaches")
                 LinkID = self.cursor.fetchall()
-                for x in range((len(TacheID))):
-                    self.cursor.execute ("SELECT nom FROM Projet WHERE ID = ('%s')"%TacheID[x][2])
-                    ProjetParent = self.cursor.fetchone()
-                    result_Projet = self.find_Project(ProjetParent[0])
-                    for y in range ((len(LinkID))):
-                        if(LinkID[y][0] == TacheID[x][0]):
-                            self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID[y][1])
-                            EmployeFromTask = self.cursor.fetchall()
-                            for z in range((len(EmployeFromTask))):
-                                result_User = self.find_User(EmployeFromTask[z][0])
-                                result_Task = self.find_Task(TacheID[x][1],self.currentProject)
-                                self.currentTask.employees.append(self.currentUser)
+                if (len(TacheID)!= 0):
+                    for x in range((len(TacheID))):
+                        self.cursor.execute ("SELECT nom FROM Projet WHERE ID = ('%s')"%TacheID[x][2])
+                        ProjetParent = self.cursor.fetchone()
+                        result_Projet = self.find_Project(ProjetParent[0])
+                        if (len(LinkID)!=0):
+                            for y in range ((len(LinkID))):
+                                if(LinkID[y][0] == TacheID[x][0]):
+                                    self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID[y][1])
+                                    EmployeFromTask = self.cursor.fetchall()
+                                    if (len(EmployeFromTask)!=0):
+                                        for z in range((len(EmployeFromTask))):
+                                            result_User = self.find_User(EmployeFromTask[z][0])
+                                            result_Task = self.find_Task(TacheID[x][1],self.currentProject)
+                                            self.currentTask.employees.append(self.currentUser)
 
                 '''for x in range(len(self.projectList)):
                     print("\n",self.projectList[x].name,"\n")
@@ -123,13 +130,15 @@ class Model:
                 #fill user project
                 self.cursor.execute("SELECT nom,ID FROM GestionnaireDeProjet")
                 Gestio = self.cursor.fetchall()
-                for x in range ((len(Gestio))):
-                    self.cursor.execute("SELECT nom FROM Projet WHERE GestionnaireID = ('%s')"%Gestio[x][1])
-                    ProjectFromGestionnaire = self.cursor.fetchall()
-                    for y in range ((len(ProjectFromGestionnaire))):
-                        result_User = self.find_User(Gestio[x][0])
-                        result_proj = self.find_Project(ProjectFromGestionnaire[y][0])                        
-                        self.currentUser.projects.append(self.currentProject)
+                if (len(Gestio)!=0):
+                    for x in range ((len(Gestio))):
+                        self.cursor.execute("SELECT nom FROM Projet WHERE GestionnaireID = ('%s')"%Gestio[x][1])
+                        ProjectFromGestionnaire = self.cursor.fetchall()
+                        if (len(ProjectFromGestionnaire)!=0):
+                            for y in range ((len(ProjectFromGestionnaire))):
+                                result_User = self.find_User(Gestio[x][0])
+                                result_proj = self.find_Project(ProjectFromGestionnaire[y][0])                        
+                                self.currentUser.projects.append(self.currentProject)
 
                 '''for x in range(len(self.userList)):
                     print("\n",self.userList[x].name,"\n")
@@ -139,25 +148,28 @@ class Model:
                 #fill user task
                 self.cursor.execute("SELECT nom,ID FROM Employe")
                 emp = self.cursor.fetchall()
-                print('emp:',emp)
+                #print('emp:',emp)
                 self.cursor.execute ("SELECT TachesID,EmployeID FROM EmployeTaches")
                 LinkID2 = self.cursor.fetchall()
-                print('link:',LinkID2)
-                for x in range(len(emp)):
-                    for y in range(len(LinkID2)):
-                        if(LinkID2[y][1] == emp[x][1]):
-                            self.cursor.execute("SELECT nom, ProjetID FROM Tache WHERE ID =('%s')"%LinkID2[y][0])
-                            TaskFromEmploye = self.cursor.fetchall()
-                            print('taskfromemploye:',TaskFromEmploye)
-                            for z in range(len(TaskFromEmploye)):
-                                self.cursor.execute("SELECT nom FROM Projet WHERE ID =('%s')"%TaskFromEmploye[z][1])
-                                project_Parent = self.cursor.fetchone()
-                                self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID2[y][1])
-                                user_Parent = self.cursor.fetchone()
-                                project_Result = self.find_Project(project_Parent[0])
-                                task_Result = self.find_Task(TaskFromEmploye[z][0], self.currentProject)
-                                user_Result = self.find_User(user_Parent[0])
-                                self.currentUser.tasks.append(self.currentTask)
+                #print('link:',LinkID2)
+                if (len(emp)!=0):
+                    for x in range(len(emp)):
+                        if (len(LinkID2)!=0):
+                            for y in range(len(LinkID2)):
+                                if(LinkID2[y][1] == emp[x][1]):
+                                    self.cursor.execute("SELECT nom, ProjetID FROM Tache WHERE ID =('%s')"%LinkID2[y][0])
+                                    TaskFromEmploye = self.cursor.fetchall()
+                                    #print('taskfromemploye:',TaskFromEmploye)
+                                    if (len(TaskFromEmploye)!=0):
+                                        for z in range(len(TaskFromEmploye)):
+                                            self.cursor.execute("SELECT nom FROM Projet WHERE ID =('%s')"%TaskFromEmploye[z][1])
+                                            project_Parent = self.cursor.fetchone()
+                                            self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID2[y][1])
+                                            user_Parent = self.cursor.fetchone()
+                                            project_Result = self.find_Project(project_Parent[0])
+                                            task_Result = self.find_Task(TaskFromEmploye[z][0], self.currentProject)
+                                            user_Result = self.find_User(user_Parent[0])
+                                            self.currentUser.tasks.append(self.currentTask)
                 
                 for x in range(len(self.userList)):
                     print("\n",self.userList[x].name,"\n")
@@ -423,3 +435,22 @@ class Model:
         self.connection.commit()
         
         task.substasks.append(subtask)
+
+        def ask_For_Get_All_Project_Informations_For_A_User(self) :
+            return self.model.get_All_User_Project_Informations()
+
+        def ask_For_Get_User_In_Use(self) :
+            return self.model.userInUse 
+    '''
+    ---------------------------------------------
+                   GET FUNCTIONS                 
+    ---------------------------------------------
+    '''
+
+    def get_All_User_Project_Informations(self) :
+        if (self.userInUse.status == 0) :
+            return self.userInUse.tasks
+        elif (self.userInUse.status == 1) :
+            return self.userInUse.projects
+        elif (self.userInUse.status == 2) :
+            return self.projectList
