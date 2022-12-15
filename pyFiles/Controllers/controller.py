@@ -4,10 +4,10 @@ import sys
 # The controller class from the MVC model
 class Controller :
     # Constructor of the class
-    def __init__(self, model, app) :
+    def __init__(self, model) :
         self.model = model
         self.view = []
-        self.app = app
+        # self.app = app
             
     # This function starts the program (start the model and show the initial widget of the program)
     def start(self) :
@@ -15,50 +15,65 @@ class Controller :
         
         errorStatus = self.model.Start()
         if(errorStatus) :
-            self.view[0].resize(800, 600)
-            self.view[0].show()
+            # self.view[0].resize(800, 600)
+            # self.view[0].show()
+            # self.view[0].show_Connection_Error_Page()
+            # sys.exit(self.app.exec())
 
             # If the model didn't connect to the DB show the error page.
-            self.view[0].show_Connection_Error_Page()
-            sys.exit(self.app.exec())
+            self.refresh(0)
         else :
-            self.view[0].resize(1000, 800)
-            self.view[0].show()
-            sys.exit(self.app.exec())
+            self.refresh(4)
             
     # This function is called whenether the view has to be change or refresh. It changes the current 
     # widget of the program.
     def refresh(self, view_Type) :
         if(view_Type == 0) :
-            self.view.current_View = 0
-            self.view.show_Connection_Error_Page()
+            self.view[0].current_View = 0
+            self.view[0].show_Connection_Error_Page()
         elif(view_Type == 1) :
-            self.view.current_View = 1
-            self.view.show_Connection_Page()
+            self.view[0].current_View = 1
+            self.view[0].show_Menu_Page()
         elif(view_Type == 2) :
-            self.view.current_View = 2
-            self.view.show_Account_Creation_Page()
+            self.view[0].current_View = 2
+            self.view[0].show_Account_Creation_Page()
         elif(view_Type == 3) :
-            self.view.current_View = 3
-            self.view.show_Projects_Page()
+            self.view[0].current_View = 3
+            self.view[0].show_Projects_Page()
         elif(view_Type == 4) :
-            self.view.current_View = 4
-            self.view.show_Gantt_Project_Page()
+            self.view[0].current_View = 4
+            self.view[0].show_Connection_Page()
         elif(view_Type == 5) :
-            self.view.current_View = 5
-            self.view.show_Tasks_Page()
+            self.view[0].current_View = 5
+            self.view[0].show_Tasks_Page()
         elif(view_Type == 6) :
-            self.view.current_View = 6
-            self.view.show_Subtasks_Page()
+            self.view[0].current_View = 6
+            self.view[0].show_Subtasks_Page()
         elif(view_Type == 7) :
-            self.view.current_View = 7
-            self.view.show_Create_Project_Page()
+            self.view[0].current_View = 7
+            self.view[0].show_Create_Project_Page()
         elif(view_Type == 8) :
-            self.view.current_View = 8
-            self.view.show_Account_Page()
+            self.view[0].current_View = 8
+            self.view[0].show_Account_Page()
         elif(view_Type == 9) :
-            self.view.current_View = 9
-            self.view.Test()
+            self.view[0].current_View = 9
+            self.view[0].link_Employee_Project()
+        elif(view_Type == 10) :
+            self.view[0].current_View = 10
+            self.view[0].link_Employee_Task()
+        elif(view_Type == 11) :
+            self.view[0].current_View = 11
+            self.view[0].link_Task_Project()
+        elif(view_Type == 11) :
+            self.view[0].current_View = 11
+            self.view[0].link_Task_Project()
+        elif(view_Type == 12) :
+            self.view[0].current_View = 12
+            self.view[0].link_Task_Subtask()
+        elif(view_Type == 13) :
+            self.view[0].current_View = 13
+            self.view[0].link_ProductOwner_Project()
+
             
     # Make the connection between the controller and the view
     def add_View(self, view) :
@@ -81,8 +96,12 @@ class Controller :
     def ask_For_Get_All_Users(self) :
         return self.model.userList 
     
-    def ask_For_Get_All_Projects_And_Tasks(self) :
-        return self.model.projectList  
+    # def ask_For_Get_All_Projects_And_Tasks(self) :
+    #     return self.model.projectList  
+
+    def ask_For_Get_All_Tasks_And_Subtasks(self) :
+        return self.model.subtaskListFromTask  
+ 
     
     def ask_For_Link_Employee_And_Project(self, employee_Name, project_Name) :
         result_Employee = self.model.find_User(employee_Name)
@@ -125,3 +144,10 @@ class Controller :
             print('\nThe TASK name or the SUBTASK name are not valid, try again\n')
         else :
             self.model.link_Task_Project(current_Task, current_Subtask)
+
+
+    def ask_For_Get_All_Project_Informations_For_A_User(self) :
+            return self.model.get_All_User_Project_Informations()
+
+    def ask_For_Get_User_In_Use(self) :
+            return self.model.userInUse 

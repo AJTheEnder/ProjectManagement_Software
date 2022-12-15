@@ -79,7 +79,7 @@ class Model:
                     self.cursor.execute("SELECT nom,Temps,Status,Etat,ID FROM Tache WHERE ProjetID = ('%s')"%name_projet[x][3])
                     TaskIDFromProjectID = self.cursor.fetchall()
                     for y in range(len(TaskIDFromProjectID)):
-                        TaskFromProject = Task(TaskIDFromProjectID[y][0], TaskIDFromProjectID[y][1], TaskIDFromProjectID[y][2], TaskIDFromProjectID[y][3],TaskIDFromProjectID[y][4])
+                        TaskFromProject = Task(TaskIDFromProjectID[y][0], TaskIDFromProjectID[y][1], TaskIDFromProjectID[y][2], TaskIDFromProjectID[y][3])
                         projet_name.tasks.append(TaskFromProject)
                         #fill Tasks subtasks list 
                         self.cursor.execute("SELECT nom,Temps,Status,Etat FROM SousTache WHERE TacheID = ('%s')"%TaskIDFromProjectID[y][4])

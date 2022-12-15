@@ -28,7 +28,7 @@ class MyWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.text)
         self.layout.addWidget(self.profil_Button)
 
-        self.profil_Button.clicked.connect(self.show_Account_Page)
+        self.profil_Button.clicked.connect(print("toto"))
 
     # @QtCore.Slot()
 

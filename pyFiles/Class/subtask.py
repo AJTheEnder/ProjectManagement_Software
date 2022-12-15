@@ -1,7 +1,3 @@
-import PySide6.QtWidgets
-import mysql.connector
-from mysql.connector import Error
-
 class Subtask:
     def __init__(self, name, time, status, state):
         self.name = name
