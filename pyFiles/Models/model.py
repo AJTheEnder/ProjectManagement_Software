@@ -104,21 +104,22 @@ class Model:
                 TacheID = self.cursor.fetchall()
                 self.cursor.execute ("SELECT TachesID,EmployeID FROM EmployeTaches")
                 LinkID = self.cursor.fetchall()
-                if (len(TacheID)!= 0):
+                if (TacheID is not None):
                     for x in range((len(TacheID))):
                         self.cursor.execute ("SELECT nom FROM Projet WHERE ID = ('%s')"%TacheID[x][2])
                         ProjetParent = self.cursor.fetchone()
-                        result_Projet = self.find_Project(ProjetParent[0])
-                        if (len(LinkID)!=0):
-                            for y in range ((len(LinkID))):
-                                if(LinkID[y][0] == TacheID[x][0]):
-                                    self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID[y][1])
-                                    EmployeFromTask = self.cursor.fetchall()
-                                    if (len(EmployeFromTask)!=0):
-                                        for z in range((len(EmployeFromTask))):
-                                            result_User = self.find_User(EmployeFromTask[z][0])
-                                            result_Task = self.find_Task(TacheID[x][1],self.currentProject)
-                                            self.currentTask.employees.append(self.currentUser)
+                        if ( ProjetParent is not None) :
+                            result_Projet = self.find_Project(ProjetParent[0])
+                            if ( LinkID is not None):
+                                for y in range ((len(LinkID))):
+                                    if(LinkID[y][0] == TacheID[x][0]):
+                                        self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID[y][1])
+                                        EmployeFromTask = self.cursor.fetchall()
+                                        if ( EmployeFromTask  is not None):
+                                            for z in range((len(EmployeFromTask))):
+                                                result_User = self.find_User(EmployeFromTask[z][0])
+                                                result_Task = self.find_Task(TacheID[x][1],self.currentProject)
+                                                self.currentTask.employees.append(self.currentUser)
 
                 '''for x in range(len(self.projectList)):
                     print("\n",self.projectList[x].name,"\n")
@@ -176,6 +177,9 @@ class Model:
                     for y in range(len(self.userList[x].tasks)):
                         print("\n   ",self.userList[x].tasks[y].name,"\n")
 
+                # for i in range(len(self.projectList)):
+                #     for j in range(len(self.projectList[i].tasks)):
+                #         print(self.projectList[i].tasks[j])
                 return False
 
         except Error as e:
@@ -292,10 +296,11 @@ class Model:
     
     ######################### FIND TASK #########################
     def find_Task(self, name, project) :
-        for i in range(len(project.tasks)) :
-            if(project.tasks[i].name == name) :
-                self.currentTask = project.tasks[i]
-                return project.tasks[i]
+        for i in range(len(self.projectList)) :
+            for j in range(len(self.projectList[i].tasks)):
+                if(self.projectList[i].tasks[j].name == name) :
+                    self.currentTask = self.projectList[i].tasks[j]
+                    return self.currentTask
         return 0
     
     ####################### FIND SUBTASK ########################
@@ -402,13 +407,14 @@ class Model:
         self.cursor.execute(select_Project)
         project_Result = self.cursor.fetchone()
         
+
         result = (project_Result[0])
         
-        # Query to make the connection in the intermediate table
-        update_Project_Foreign_Key = '''UPDATE Tache SET (ProjetID) = (%s) WHERE (nom) = (%s)'''
         input_data = (project_Result, task_data)
-        
-        self.cursor.execute(update_Project_Foreign_Key, input_data)
+        # Query to make the connection in the intermediate table
+        update_Project_Foreign_Key = '''UPDATE Tache SET (ProjetID) = (%s) WHERE (nom) = (%s)'''%input_data
+
+        self.cursor.execute(update_Project_Foreign_Key)
         self.connection.commit()
         
         project.tasks.append(task)

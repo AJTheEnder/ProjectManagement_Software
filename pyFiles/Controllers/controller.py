@@ -96,11 +96,15 @@ class Controller :
     def ask_For_Get_All_Users(self) :
         return self.model.userList 
     
-    # def ask_For_Get_All_Projects_And_Tasks(self) :
-    #     return self.model.projectList  
+    def ask_For_Get_All_Projects_And_Tasks(self) :
+        return self.model.projectList  
 
     def ask_For_Get_All_Tasks_And_Subtasks(self) :
-        return self.model.subtaskListFromTask  
+        task_List = []
+        for i in range(len(self.model.projectList)) :
+            for j in range(len(self.model.projectList[i].tasks)) :
+                task_List.append(self.model.projectList[i].tasks[j])
+        return task_List
  
     
     def ask_For_Link_Employee_And_Project(self, employee_Name, project_Name) :
@@ -129,10 +133,11 @@ class Controller :
 
     def ask_For_Link_Project_And_Task(self, project_Name, task_Name) :
         result_Project = self.model.find_Project(project_Name)
-        result_Task = self.model.find_Task(task_Name)
+        result_Task = self.model.find_Task(task_Name, result_Project)
         if(result_Project == 0 or result_Task == 0) :
             print('\nThe PROJECT name or the TASK name are not valid, try again\n')
         else :
+            print('\nThe PROJECT name and the TASK succeded link\n')
             self.model.link_Task_Project(self.model.currentProject, self.model.currentTask)
             
     def ask_For_Link_Task_And_Subtask(self, task_Name, subtask_Name) :
@@ -147,7 +152,13 @@ class Controller :
 
 
     def ask_For_Get_All_Project_Informations_For_A_User(self) :
-            return self.model.get_All_User_Project_Informations()
+        return self.model.get_All_User_Project_Informations()
 
     def ask_For_Get_User_In_Use(self) :
-            return self.model.userInUse 
+        return self.model.userInUse 
+
+    def ask_For_Find_User(self, username):
+        return  self.model.find_User(username)
+
+    def make_User_In_Use(self):
+        self.model.userInUse = self.model.currentUser

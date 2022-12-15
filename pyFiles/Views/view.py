@@ -23,12 +23,12 @@ class View :
             print('\nMENU PAGE\n'
                   '\n[1] -- Add an user\n'
                   '\n[2] -- Add a project with tasks\n'
-                  '\n[3] -- Show all users\n'
+                  '\n[3] -- Show all users (Admin Only)\n'
                   '\n[4] -- Show all project with their tasks\n'
-                #   '\n[5] -- Link an employee to a project\n'
+                  '\n[5] -- ##In Developpement## Link an employee to a project\n'
                   '\n[6] -- Link an employee to a task\n'
                   '\n[7] -- Link a project to a task\n'
-                  '\n[8] -- Link a task to a subtask\n'
+                  '\n[8] -- ##In Developpement## Link a task to a subtask\n'
                   '\n[9] -- Link a product owner to a project\n'
                   )
             choice = input('\nCHOICE : \n')
@@ -79,21 +79,51 @@ class View :
     # regular employees.    
     def show_Projects_Page(self) :
         print('\nPROJECTS PAGE\n')
-        projects_List = self.controller.ask_For_Get_All_Projects_And_Tasks()
-        for i in range(len(projects_List)) :
-            print('\n\nProject NAME : ', projects_List[i].name)
-            print('\nThis project takes ', projects_List[i].time, ' in total')
-            print('\nTASKS of the project : \n')
-            for j in range(len(projects_List[i].tasks)) :
-                print('\nTask NAME : ', projects_List[i].tasks[j].name)
-                print('\nTask TIME : ', projects_List[i].tasks[j].time)
-                print('\nTask STATUS : ', projects_List[i].tasks[j].status)
-                print('\nTask STATE : ', projects_List[i].tasks[j].state, '\n')
-        end = input('\n\nPress ENTER to go back to MENU\n')
+        current_User = self.controller.ask_For_Get_User_In_Use()
+        if (current_User.status == 2 ) :
+            projects_List = self.controller.ask_For_Get_All_Project_Informations_For_A_User()
+            for i in range(len(projects_List)) :
+                print('\n\nProject NAME : ', projects_List[i].name)
+                print('\nThis project takes ', projects_List[i].time, ' in total')
+                print('\nTASKS of the project : \n')
+                for j in range(len(projects_List[i].tasks)) :
+                    print('\nTask NAME : ', projects_List[i].tasks[j].name)
+                    print('\nTask TIME : ', projects_List[i].tasks[j].time)
+                    print('\nTask STATUS : ', projects_List[i].tasks[j].status)
+                    print('\nTask STATE : ', projects_List[i].tasks[j].state, '\n')
+            end = input('\n\nPress ENTER to go back to MENU\n')
+
+        elif (current_User.status == 1 ):
+            projects_List = self.controller.ask_For_Get_All_Project_Informations_For_A_User()
+            for i in range(len(projects_List)) :
+                print('\n\nProject NAME : ', projects_List[i].name)
+                print('\nThis project takes ', projects_List[i].time, ' in total')
+                print('\nTASKS of the project : \n')
+                for j in range(len(projects_List[i].tasks)) :
+                    print('\nTask NAME : ', projects_List[i].tasks[j].name)
+                    print('\nTask TIME : ', projects_List[i].tasks[j].time)
+                    print('\nTask STATUS : ', projects_List[i].tasks[j].status)
+                    print('\nTask STATE : ', projects_List[i].tasks[j].state, '\n')
+            end = input('\n\nPress ENTER to go back to MENU\n')
+
+        elif (current_User.status == 0 ):
+            tasks_List = self.controller.ask_For_Get_All_Project_Informations_For_A_User()
+            for i in range(len(tasks_List)) :
+                print('\nTask NAME : ', tasks_List[i].name)
+                print('\nTask TIME : ', tasks_List[i].time)
+                print('\nTask STATUS : ', tasks_List[i].status)
+                print('\nTask STATE : ', tasks_List[i].state, '\n')
+            end = input('\n\nPress ENTER to go back to MENU\n')     
         self.controller.refresh(1)
 
     def show_Connection_Page (self) :
-        username = input('\n\nEnter your username : \n')
+        username = input('\n\nEnter your username : \n') 
+        if (self.controller.ask_For_Find_User(username) != 0):
+            self.controller.make_User_In_Use()
+            self.controller.refresh(1)
+        else:
+            self.controller.refresh(4)
+
 
 
     # This page shows all the tasks of a project in a Gantt form. This page is inaccessible for regular employees.
@@ -129,16 +159,24 @@ class View :
             self.controller.refresh(1)
         else:
             print("\nYou don't have permission to do this, please make sure you are a product owner")
+            self.controller.refresh(7)
                
     # This page shows the informations of the current user. 
     def show_Account_Page(self) :
         print('\nACCOUNT PAGE\n')
-        users_List = self.controller.ask_For_Get_All_Users()
-        for i in range(len(users_List)) :
-            print('\n\nUser NAME : ', users_List[i].name)
-            print('\nUser PASSWORD ', users_List[i].password)
-        end = input('\n\nPress [ENTER] to go back to MENU...\n')
-        self.controller.refresh(1)
+        current_User = self.controller.ask_For_Get_User_In_Use()
+        if (current_User.status == 2 ) :
+            users_List = self.controller.ask_For_Get_All_Users()
+            for i in range(len(users_List)) :
+                print('\n\nUser NAME : ', users_List[i].name)
+                print('\nUser PASSWORD : ', users_List[i].password)
+                print('\nUser STATUS : ', users_List[i].status)
+            end = input('\n\nPress [ENTER] to go back to MENU...\n')
+            self.controller.refresh(1)
+        else:
+            print("\nYou don't have permission to do this, please make sure you are a product owner")
+            self.controller.refresh(4)
+
         
     # def link_Employee_Project(self) :
     #     users_List = self.controller.ask_For_Get_All_Users()
@@ -162,13 +200,18 @@ class View :
 
     def link_Task_Project(self) :
         project_List = self.controller.ask_For_Get_All_Projects_And_Tasks()
-        print ('\EXISTING PROJECT : \n')
+        print ('\nEXISTING PROJECT : \n')
         for i in range(len(project_List)) :
             print(project_List[i].name)
+        task_List = self.controller.ask_For_Get_All_Tasks_And_Subtasks()
+        print ('\nEXISTING TASK : \n')
+        for i in range(len(task_List)) :
+            print(task_List[i].name)
 
         project_Name = input('\nEnter a project NAME to link a task to : \n')
         task_Name = input('\nEnter a task NAME to link : \n')
         self.controller.ask_For_Link_Project_And_Task(project_Name, task_Name)
+        self.controller.refresh(11)
 
     def link_ProductOwner_Project(self) :
         productOwner_List = self.controller.ask_For_Get_All_Users()
@@ -184,17 +227,19 @@ class View :
             self.controller.ask_For_Link_Projectowner_And_Project(project_Name, employee_Name)
         else:
             print("\nYou don't have permission to do this, please make sure you are a product owner")
+            self.controller.refresh(13)
 
-    def link_Task_Subtask(self) :
-        task_List = self.controller.ask_For_Get_All_Tasks_And_Subtasks()
-        print ('\nEXISTING TASK : \n')
-        for i in range(len(task_List)) :
-            print(task_List[i].name)
+    # def link_Task_Subtask(self) :
+    #     task_List = self.controller.ask_For_Get_All_Tasks_And_Subtasks()
+    #     print ('\nEXISTING TASK : \n')
+    #     for i in range(len(task_List)) :
+    #         print(task_List[i].name)
 
-        current_User = self.controller.ask_For_Get_User_In_Use()
-        if (current_User.status == 1 or current_User.status == 2 ) :
-            task_Name = input('\nEnter a task NAME to link a subtask to: \n')
-            subtask_Name = input('\nEnter a subtask NAME to link : \n')
-            self.controller.ask_For_Link_Task_And_Subtask(task_Name, subtask_Name)
-        else:
-            print("\nYou don't have permission to do this, please make sure you are a product owner")
+    #     current_User = self.controller.ask_For_Get_User_In_Use()
+    #     if (current_User.status == 1 or current_User.status == 2 ) :
+    #         task_Name = input('\nEnter a task NAME to link a subtask to: \n')
+    #         subtask_Name = input('\nEnter a subtask NAME to link : \n')
+    #         self.controller.ask_For_Link_Task_And_Subtask(task_Name, subtask_Name)
+    #     else:
+    #         print("\nYou don't have permission to do this, please make sure you are a product owner")
+    #         self.controller.refresh(12)
