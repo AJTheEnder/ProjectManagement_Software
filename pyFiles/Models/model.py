@@ -67,9 +67,6 @@ class Model:
                     collect_user_gestionnaire = User(name_gestionnaire[z][0], None, 1)
                     self.userList.append(collect_user_gestionnaire)
 
-                '''for i in range(len(self.userList)) :
-                    print(self.userList[i].name)'''
-
             #fill project   
                 self.cursor.execute("SELECT nom,Temps,DateCreation,ID FROM Projet")
                 name_projet = self.cursor.fetchall()  
@@ -92,13 +89,6 @@ class Model:
                                         SubTaskFromProject = Subtask(SubTaskIDFromTask[z][0], SubTaskIDFromTask[z][1], SubTaskIDFromTask[z][2], SubTaskIDFromTask[z][3])  
                                         projet_name.tasks[y].subtasks.append(SubTaskFromProject)                                     
 
-                '''for x in range(len(self.projectList)) :
-                    print("\n",self.projectList[x].name,"\n")
-                    for y in range(len(self.projectList[x].tasks)):
-                        print("\n   ",self.projectList[x].tasks[y].name,"\n")
-                        for z in range(len(self.projectList[x].tasks[y].subtasks)):
-                            print("\n   ",self.projectList[x].tasks[y].subtasks[z].name,"\n")'''
-
                 #fill Tasks employee list              
                 self.cursor.execute ("SELECT ID,nom,ProjetID FROM Tache")
                 TacheID = self.cursor.fetchall()
@@ -118,15 +108,8 @@ class Model:
                                         if ( EmployeFromTask  is not None):
                                             for z in range((len(EmployeFromTask))):
                                                 result_User = self.find_User(EmployeFromTask[z][0])
-                                                result_Task = self.find_Task(TacheID[x][1],self.currentProject)
+                                                result_Task = self.find_Task(TacheID[x][1])
                                                 self.currentTask.employees.append(self.currentUser)
-
-                '''for x in range(len(self.projectList)):
-                    print("\n",self.projectList[x].name,"\n")
-                    for y in range(len(self.projectList[x].tasks)):
-                        print("\n   ",self.projectList[x].tasks[y].name,"\n")
-                        for z in range(len(self.projectList[x].tasks[y].employees)):
-                            print("\n     ",self.projectList[x].tasks[y].employees[z].name,"\n")'''
                 
                 #fill user project
                 self.cursor.execute("SELECT nom,ID FROM GestionnaireDeProjet")
@@ -141,16 +124,11 @@ class Model:
                                 result_proj = self.find_Project(ProjectFromGestionnaire[y][0])                        
                                 self.currentUser.projects.append(self.currentProject)
 
-                '''for x in range(len(self.userList)):
-                    print("\n",self.userList[x].name,"\n")
-                    for y in range(len(self.userList[x].projects)):
-                        print("\n   ",self.userList[x].projects[y].name,"\n")'''
-
                 #fill user task
                 self.cursor.execute("SELECT nom,ID FROM Employe")
                 emp = self.cursor.fetchall()
                 #print('emp:',emp)
-                self.cursor.execute ("SELECT TachesID,EmployeID FROM EmployeTaches")
+                self.cursor.execute("SELECT TachesID,EmployeID FROM EmployeTaches")
                 LinkID2 = self.cursor.fetchall()
                 #print('link:',LinkID2)
                 if (len(emp)!=0):
@@ -168,18 +146,10 @@ class Model:
                                             self.cursor.execute("SELECT nom FROM Employe WHERE ID =('%s')"%LinkID2[y][1])
                                             user_Parent = self.cursor.fetchone()
                                             project_Result = self.find_Project(project_Parent[0])
-                                            task_Result = self.find_Task(TaskFromEmploye[z][0], self.currentProject)
+                                            task_Result = self.find_Task(TaskFromEmploye[z][0])
                                             user_Result = self.find_User(user_Parent[0])
                                             self.currentUser.tasks.append(self.currentTask)
                 
-                for x in range(len(self.userList)):
-                    print("\n",self.userList[x].name,"\n")
-                    for y in range(len(self.userList[x].tasks)):
-                        print("\n   ",self.userList[x].tasks[y].name,"\n")
-
-                # for i in range(len(self.projectList)):
-                #     for j in range(len(self.projectList[i].tasks)):
-                #         print(self.projectList[i].tasks[j])
                 return False
 
         except Error as e:
@@ -255,7 +225,7 @@ class Model:
         self.connection.commit()
 
     ########################## ADD TASK ##########################
-    def add_Task(self, name, time, status, state, parent, parentID):
+    def add_Task(self, name, time, status, state, parentID):
 
         task_Data = (name, time, status, state, int(parentID))
 
@@ -295,7 +265,7 @@ class Model:
         return 0
     
     ######################### FIND TASK #########################
-    def find_Task(self, name, project) :
+    def find_Task(self, name) :
         for i in range(len(self.projectList)) :
             for j in range(len(self.projectList[i].tasks)):
                 if(self.projectList[i].tasks[j].name == name) :
@@ -310,6 +280,41 @@ class Model:
                 self.currentTask = task.subtask[i]
                 return task.subtasks[i]
         return 0
+    
+    '''
+    ||---------------------------------------------||
+    ||            FIND IN DB FUNCTIONS             ||
+    ||---------------------------------------------||
+    '''
+    
+    ###################### FIND ID USER #########################
+    def find_ID_User(self, name, status) :
+        if(status == 0) :
+            self.cursor.execute("SELECT ID FROM Employe WHERE nom = ('%s')"%name)
+            result =  self.cursor.fetchone()[0]
+            return result
+        elif(status == 1) :
+            self.cursor.execute("SELECT ID FROM GestionnaireDeProjet WHERE nom = ('%s')"%name)
+            result = self.cursor.fetchone()[0]
+            return result
+        elif(status == 2) :
+            self.cursor.execute("SELECT ID FROM Administrateur WHERE nom = ('%s')"%name)
+            result = self.cursor.fetchone()[0]
+            return result
+        else :
+            return None
+    
+    ##################### FIND ID PROJECT #######################
+    def find_ID_Project(self, name) :
+        self.cursor.execute("SELECT ID FROM Projet WHERE nom = ('%s')"%name)
+        result = self.cursor.fetchone()[0]
+        return result
+    
+    ###################### FIND ID TASK #########################
+    def find_ID_Task(self, name) :
+        self.cursor.execute("SELECT ID FROM Tache WHERE nom = ('%s')"%name)
+        result =  self.cursor.fetchone()[0]
+        return result
     
     '''
     ||---------------------------------------------||
@@ -370,7 +375,7 @@ class Model:
         self.connection.commit()
         
         employee.tasks.append(task)
-        task.employee.append(employee)
+        task.employees.append(employee)
 
     ################ LINK PROJECTPROJECTOWNER ##################
     def link_Project_ProjectOwner(self, project, projectowner) :
@@ -384,11 +389,9 @@ class Model:
         self.cursor.execute(select_Projectowner)
         projectowner_Result = self.cursor.fetchone()
         
-        result = (projectowner_Result[0])
-        
         # Query to make the connection in the intermediate table
-        update_Projectowner_Foreign_Key = '''UPDATE Tache SET (ProjetID) = (%s) WHERE (nom) = (%s)'''
-        input_data = (projectowner_Result, project_data)
+        update_Projectowner_Foreign_Key = '''UPDATE Projet SET GestionnaireID = (%s) WHERE nom = (%s)'''
+        input_data = (projectowner_Result[0], project_data)
         
         self.cursor.execute(update_Projectowner_Foreign_Key, input_data)
         self.connection.commit()
@@ -448,9 +451,9 @@ class Model:
         def ask_For_Get_User_In_Use(self) :
             return self.model.userInUse 
     '''
-    ---------------------------------------------
-                   GET FUNCTIONS                 
-    ---------------------------------------------
+    ||---------------------------------------------||
+    ||               GET FUNCTIONS                 ||
+    ||---------------------------------------------||
     '''
 
     def get_All_User_Project_Informations(self) :

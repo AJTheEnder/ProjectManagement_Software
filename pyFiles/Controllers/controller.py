@@ -1,6 +1,3 @@
-from PySide6 import QtCore, QtWidgets, QtGui
-import sys
-
 # The controller class from the MVC model
 class Controller :
     # Constructor of the class
@@ -63,10 +60,7 @@ class Controller :
             self.view[0].link_Employee_Task()
         elif(view_Type == 11) :
             self.view[0].current_View = 11
-            self.view[0].link_Task_Project()
-        elif(view_Type == 11) :
-            self.view[0].current_View = 11
-            self.view[0].link_Task_Project()
+            self.view[0].add_Task_Project()
         elif(view_Type == 12) :
             self.view[0].current_View = 12
             self.view[0].link_Task_Subtask()
@@ -84,14 +78,15 @@ class Controller :
         self.refresh(1)
         
     def ask_For_Add_Project(self, project_Name, project_Time) :
-        self.model.add_Project(project_Name, project_Time) 
+        self.model.add_Project(project_Name, project_Time)
+        return self.model.find_ID_Project(project_Name) 
         
     def ask_For_Add_Task(self, task_Name, task_Time, task_Status, task_State, parent, parentID):
         result = self.model.find_Project(parent)
         if(result == 0) :
             print('\n   The TASK parent is not valid, try again \n')
         else :
-            self.model.add_Task(task_Name, task_Time, task_Status, task_State, parent, parentID)
+            self.model.add_Task(task_Name, task_Time, task_Status, task_State, parentID)
         
     def ask_For_Get_All_Users(self) :
         return self.model.userList 
@@ -129,7 +124,7 @@ class Controller :
         if(result_Project == 0 or result_Projectowner == 0) :
             print('\nThe PROJECT name or the PROJECT OWNER name are not valid, try again\n')
         else :
-            self.model.link_Project_Projectowner(self.model.currentProject, self.model.currentUser)
+            self.model.link_Project_ProjectOwner(self.model.currentProject, self.model.currentUser)
 
     def ask_For_Link_Project_And_Task(self, project_Name, task_Name) :
         result_Project = self.model.find_Project(project_Name)
@@ -162,3 +157,12 @@ class Controller :
 
     def make_User_In_Use(self):
         self.model.userInUse = self.model.currentUser
+        
+    def ask_For_Find_Project_ID(self, project_Name) :
+        return self.model.find_ID_Project(project_Name)
+    
+    def ask_For_Find_Project(self, project_Name) :
+        result_Project = self.model.find_Project(project_Name)
+        if(result_Project == 0) :
+            print('\nThe PROJECT name or the PROJECT OWNER name are not valid, try again\n')
+            self.refresh(1)
